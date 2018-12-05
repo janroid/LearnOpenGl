@@ -162,7 +162,7 @@ int main()
 		ourShader.setVec3("lightPos", lightPos);
 		ourShader.setVec3("cameraPos", camera.Position);
 		ourShader.setMat4("view", view);
-		//model = glm::rotate(model,glm::radians(30.0f), glm::vec3(1.0f, -1.0f, 0.0f));
+		model = glm::rotate(model,glm::radians(-45.0f), glm::vec3(1.0f, -1.0f, 0.0f));
 
 		ourShader.setMat4("model", model);
 
@@ -205,7 +205,7 @@ void processInput(GLFWwindow *window) {
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		camera.ProcessKeyboard(FORWARD, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		camera.ProcessKeyboard(BACKWARF, deltaTime);
+		camera.ProcessKeyboard(BACKWARD, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 		camera.ProcessKeyboard(LEFT, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
