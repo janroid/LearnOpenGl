@@ -4,6 +4,7 @@
 #include <glad\glad.h>
 #include <glm\glm.hpp>
 #include <glm\gtc\matrix_transform.hpp>
+#include <iostream>
 
 #include <vector>
 
@@ -57,12 +58,13 @@ public:
 
 	glm::mat4 GetViewMatrix()
 	{
-		return lookAt(Position, Position + Front, Up);
+		return glm::lookAt(Position, Position + Front, Up);
 	}
 
 	void ProcessKeyboard(Camera_Movement direction, float deltaTime)
 	{
 		float velocity = MovementSpeed * deltaTime;
+	
 		if (direction == FORWARD)
 			Position += Front * velocity;
 		if (direction == BACKWARF)
@@ -115,33 +117,6 @@ private:
 
 		Right = glm::normalize(glm::cross(Front, WorldUp));
 		Up = glm::normalize(glm::cross(Right, Front));
-
-	}
-
-	glm::mat4 lookAt(glm::vec3 pos, glm::vec3 endPos, glm::vec3 up)
-	{
-
-		glm::vec3 d = glm::normalize(pos - endPos);
-		glm::vec3 r = glm::normalize(glm::cross(glm::normalize(up), d));
-		glm::vec3 u = glm::cross(d,r);
-
-		glm::mat4 translation;
-		translation[3][0] = -pos.x;
-		translation[3][1] = -pos.y;
-		translation[3][2] = -pos.z;
-
-		glm::mat4 rotation;
-		rotation[0][0] = r.x;
-		rotation[1][0] = r.y;
-		rotation[2][0] = r.z;
-		rotation[0][1] = u.x;
-		rotation[1][1] = u.y;
-		rotation[2][1] = u.z;
-		rotation[0][2] = d.x;
-		rotation[1][2] = d.y;
-		rotation[2][2] = d.z;
-
-		return rotation * translation;
 
 	}
 

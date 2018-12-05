@@ -1,12 +1,13 @@
-﻿  Main.cpp
-d:\vsworkspace\gltest\gltest\shader_m.cpp(5): warning C4067: 预处理器指令后有意外标记 - 应输入换行符
-d:\vsworkspace\gltest\gltest\main.cpp(194): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
-d:\vsworkspace\gltest\gltest\main.cpp(255): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
-d:\vsworkspace\gltest\gltest\main.cpp(269): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-d:\vsworkspace\gltest\gltest\main.cpp(270): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-d:\vsworkspace\gltest\gltest\main.cpp(275): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
-d:\vsworkspace\gltest\gltest\main.cpp(276): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
-d:\vsworkspace\gltest\gltest\main.cpp(277): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-d:\vsworkspace\gltest\gltest\main.cpp(278): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-d:\vsworkspace\gltest\gltest\main.cpp(285): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
-  GLTest.vcxproj -> D:\VSWorkspace\GLTest\Debug\GLTest.exe
+﻿  Camera.cpp
+  Main.cpp
+d:\vsworkspace\learngl\gltest\shader_m.cpp(5): warning C4067: 预处理器指令后有意外标记 - 应输入换行符
+d:\vsworkspace\learngl\gltest\main.cpp(144): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+d:\vsworkspace\learngl\gltest\main.cpp(218): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+d:\vsworkspace\learngl\gltest\main.cpp(219): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+d:\vsworkspace\learngl\gltest\main.cpp(223): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+d:\vsworkspace\learngl\gltest\main.cpp(224): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+d:\vsworkspace\learngl\gltest\main.cpp(226): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+d:\vsworkspace\learngl\gltest\main.cpp(227): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+d:\vsworkspace\learngl\gltest\main.cpp(234): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
+  正在生成代码...
+  GLTest.vcxproj -> D:\VSWorkspace\LearnGL\Debug\GLTest.exe
