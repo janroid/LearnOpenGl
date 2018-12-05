@@ -150,6 +150,10 @@ int main()
 			lastFrame = curTime;
 		}
 		
+		// π‚‘¥“∆∂Ø
+		lightPos.x = 1.0f + sin(glfwGetTime())*2.0f;
+		lightPos.y = sin(glfwGetTime() / 2.0) * 1.0f;
+
 
 		glm::mat4 projection, view, model;
 
@@ -162,7 +166,7 @@ int main()
 		ourShader.setVec3("lightPos", lightPos);
 		ourShader.setVec3("cameraPos", camera.Position);
 		ourShader.setMat4("view", view);
-		model = glm::rotate(model,glm::radians(-45.0f), glm::vec3(1.0f, -1.0f, 0.0f));
+		//model = glm::rotate(model,glm::radians(-45.0f), glm::vec3(1.0f, -1.0f, 0.0f));
 
 		ourShader.setMat4("model", model);
 
