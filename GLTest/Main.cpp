@@ -92,6 +92,13 @@ int main()
 		glm::vec3(-1.3f,  1.0f, -1.5f)
 	};
 
+	glm::vec3 pointLightPositions[] = {
+		glm::vec3(0.7f,  0.2f,  2.0f),
+		glm::vec3(2.3f, -3.3f, -4.0f),
+		glm::vec3(-4.0f,  2.0f, -12.0f),
+		glm::vec3(0.0f,  0.0f, -3.0f)
+	};
+
 
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -152,10 +159,6 @@ int main()
 	unsigned int specularMap = loadTexture("D:/VSWorkspace/LearnGL/res/box_light_c.png");
 	ourShader.setInt("material.specular", 1);
 
-	unsigned int emissionMap = loadTexture("D:/VSWorkspace/LearnGL/res/emission.jpg");
-	ourShader.setInt("material.specular", 2);
-
-
 	while (!glfwWindowShouldClose(window)) {
 		processInput(window);
 
@@ -189,21 +192,60 @@ int main()
 		//model = glm::rotate(model,glm::radians(-45.0f), glm::vec3(1.0f, -1.0f, 0.0f));
 
 
+		// 定向光
+		ourShader.setVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
+		ourShader.setVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
+		ourShader.setVec3("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
+		ourShader.setVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
+
+		// 点光源
+		ourShader.setVec3("pointLight[0].position", pointLightPositions[0]);
+		ourShader.setFloat("pointLight[0].Kc", 1.0f);
+		ourShader.setFloat("pointLight[0].Kl", 0.09f);
+		ourShader.setFloat("pointLight[0].Kq", 0.032f);
+		ourShader.setVec3("pointLight[0].ambient", 0.05f, 0.05f, 0.05f);
+		ourShader.setVec3("pointLight[0].diffuse", 0.8f, 0.8f, 0.8f);
+		ourShader.setVec3("pointLight[0].specular", 1.0f, 1.0f, 1.0f);
+
+		ourShader.setVec3("pointLight[1].position", pointLightPositions[1]);
+		ourShader.setFloat("pointLight[1].Kc", 1.0f);
+		ourShader.setFloat("pointLight[1].Kl", 0.09f);
+		ourShader.setFloat("pointLight[1].Kq", 0.032f);
+		ourShader.setVec3("pointLight[1].ambient", 0.05f, 0.05f, 0.05f);
+		ourShader.setVec3("pointLight[1].diffuse", 0.8f, 0.8f, 0.8f);
+		ourShader.setVec3("pointLight[1].specular", 1.0f, 1.0f, 1.0f);
+
+		ourShader.setVec3("pointLight[2].position", pointLightPositions[2]);
+		ourShader.setFloat("pointLight[2].Kc", 1.0f);
+		ourShader.setFloat("pointLight[2].Kl", 0.09f);
+		ourShader.setFloat("pointLight[2].Kq", 0.032f);
+		ourShader.setVec3("pointLight[2].ambient", 0.05f, 0.05f, 0.05f);
+		ourShader.setVec3("pointLight[2].diffuse", 0.8f, 0.8f, 0.8f);
+		ourShader.setVec3("pointLight[2].specular", 1.0f, 1.0f, 1.0f);
+
+		ourShader.setVec3("pointLight[3].position", pointLightPositions[3]);
+		ourShader.setFloat("pointLight[3].Kc", 1.0f);
+		ourShader.setFloat("pointLight[3].Kl", 0.09f);
+		ourShader.setFloat("pointLight[3].Kq", 0.032f);
+		ourShader.setVec3("pointLight[3].ambient", 0.05f, 0.05f, 0.05f);
+		ourShader.setVec3("pointLight[3].diffuse", 0.8f, 0.8f, 0.8f);
+		ourShader.setVec3("pointLight[3].specular", 1.0f, 1.0f, 1.0f);
+		
+
 		// 设置光照
 		//ourShader.setVec3("light.position",lightPos);
-		ourShader.setVec3("light.position", camera.Position);
-		ourShader.setVec3("light.direction", camera.Front);
-		ourShader.setFloat("light.cutOff", glm::cos(glm::radians(12.5f)));
-		ourShader.setFloat("light.outCutOff", glm::cos(glm::radians(17.5f)));
+		ourShader.setVec3("spotLight.direction", camera.Front);
+		ourShader.setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
+		ourShader.setFloat("spotLight.outCutOff", glm::cos(glm::radians(17.5f)));
+		ourShader.setFloat("spotLight.Kc", 1.0f);
+		ourShader.setFloat("spotLight.Kl", 0.09f);
+		ourShader.setFloat("spotLight.Kq", 0.032f);
+		ourShader.setVec3("spotLight.ambient", 0.0f,0.0f,0.0f);
+		ourShader.setVec3("spotLight.diffuse", 1.0f, 1.0f, 1.0f);
+		ourShader.setVec3("spotLight.specular",1.0f, 1.0f, 1.0f);
 
-		ourShader.setVec3("light.ambient", 0.2f,0.2f,0.2f);
-		ourShader.setVec3("light.diffuse", 0.5f,0.5f,0.5f);
-		ourShader.setVec3("light.specular",1.0f, 1.0f, 1.0f);
-
-		//衰减
-		ourShader.setFloat("light.k1", 1.0f);
-		ourShader.setFloat("light.k2", 0.09f);
-		ourShader.setFloat("light.k3", 0.032f);
+	
+		
 
 
 		// 设置材质
@@ -215,8 +257,7 @@ int main()
 		glBindTexture(GL_TEXTURE_2D, diffuseMap);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, specularMap);
-		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_2D, emissionMap);
+
 
 
 		// 绘制
@@ -232,16 +273,20 @@ int main()
 		
 		}
 		
+		lightShader.use();
+		lightShader.setMat4("projection",projection);
+		lightShader.setMat4("view",view);
+		
+		glBindVertexArray(lightVAO);
+		for (unsigned int i = 0; i < 4; i++) {
+			glm::mat4 model3;
+			model3 = glm::translate(model3,pointLightPositions[i]);
+			model3 = glm::scale(model3, glm::vec3(0.2f));
 
-		//lightShader.use();
-		//lightShader.setMat4("projection",projection);
-		//lightShader.setMat4("view",view);
-		//glm::mat4 model2;
-		//model2 = glm::translate(model2,lightPos);
-		//model2 = glm::scale(model2,glm::vec3(0.2f));
-		//lightShader.setMat4("model",model2);
-
-		//glDrawArrays(GL_TRIANGLES, 0, 36);
+			lightShader.setMat4("model", model3);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
+		
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
