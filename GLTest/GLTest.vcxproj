@@ -125,6 +125,7 @@
     <ClCompile Include="..\includes\glm\detail\dummy.cpp" />
     <ClCompile Include="..\includes\glm\detail\glm.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="FlightDemo.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Shader_m.cpp" />
