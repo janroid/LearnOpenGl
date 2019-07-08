@@ -3,7 +3,8 @@
 
 #include <Shader_m.cpp>
 #include <Camera.cpp>
-#include <FlightDemo.cpp>
+//#include <FlightDemo.cpp>
+#include <PointDemo.cpp>
 
 #include <iostream>
 #include <string>
@@ -46,15 +47,15 @@ int main()
 	glfwSetCursorPosCallback(window, mource_callback);
 	glfwSetScrollCallback(window, mource_scroll);
 
-	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); 
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
 		return -1;
 	}
 
-	FlightDemo(width, height, window);
-
+	//FlightDemo(width, height, window);
+	PointDemo(width, height, window);
 
 	return 0;
 }
