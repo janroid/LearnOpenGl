@@ -16,6 +16,8 @@ class Shader_m
 public:
 	unsigned int ID;
 
+	Shader_m() {};
+
 	Shader_m(const char* vertexPath, const char* framentPath)
 	{
 		std::string vertexCode;

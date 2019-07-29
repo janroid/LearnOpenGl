@@ -15,62 +15,58 @@
 class PointDemo
 {
 public:
-	/*float vCoast[72] = {
-		-2.0f, 0.0f, -2.0f,
-		2.0f, 0.0f, -2.0f,
-		0.0f, 4.0f, 0.0f,
-
-		2.0f, 0.0f, -2.0f,
-		2.0f, 0.0f, 2.0f,
-		0.0f, 4.0f, 0.0f,
-
-		2.0f, 0.0f, 2.0f,
-		-2.0f, 0.0f, 2.0f,
-		0.0f, 4.0f, 0.0f,
-
-		-2.0f, 0.0f, 2.0f,
-		-2.0f, 0.0f, -2.0f,
-		0.0f, 4.0f, 0.0f };*/
-
-	float vCoast[9] = {
-		-0.5f, -0.5f, 0.0f,
-		0.5f, -0.5f, 0.0f,
-		0.0f, 0.5f, 0.0f
+	float vCoast[30] = {
+		0.0f,0.0f, 0.0f,1.0f, 0.0f, 0.0f,
+		0.5f, 0.5f, 0.0f,1.0f, 0.0f, 0.0f,
+		0.5f, -0.5f, 0.0f,1.0f, 0.0f, 0.0f,
+		-0.5, -0.5, 0.0f,0.0f, 0.0f, 1.0f,
+		-0.5f, 0.5f, 0.0f,0.0f, 0.0f, 1.0f,
 	};
 
+	unsigned indices[6] = {
+		0,1,2,
+		0,3,4,
+	};
 
 	PointDemo(int w, int h, GLFWwindow* window) {
 		glEnable(GL_DEPTH_TEST);
-
-		for (int i = 0; i < 72; i++) {
-			vCoast[i] = vCoast[i] / 5.0f;
-		}
 		
 		Shader_m vShader("D:/VSWorkspace/LearnGL/shader/PointVerShader.shader", "D:/VSWorkspace/LearnGL/shader/PointFrameShader.shader");
 
-		unsigned int VBO, VAO;
+		unsigned int VBO, VAO, EBO;
 
 		glGenBuffers(1, &VBO);
+		glGenBuffers(1, &EBO);
 		glGenVertexArrays(1, &VAO);
 
 		glBindVertexArray(VAO);
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
 		glBufferData(GL_ARRAY_BUFFER, sizeof(vCoast), vCoast, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-		glVertexAttribPointer(0,3,GL_FLOAT, GL_FALSE, 3*sizeof(float),(void*)0);
+		glVertexAttribPointer(0,3,GL_FLOAT, GL_FALSE, 6*sizeof(float),(void*)0);
 		glEnableVertexAttribArray(0);
 
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindVertexArray(0);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+		glEnableVertexAttribArray(1);
 
+		glBindVertexArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+
+		//ÏßÄ£Ê½
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		while (!glfwWindowShouldClose(window)) {
 			glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			vShader.use();
+
 			glBindVertexArray(VAO);
-			glDrawArrays(GL_TRIANGLE_FAN, 0, 12);
+
+			glDrawElements(GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT,0);
 
 			glfwSwapBuffers(window);
 			glfwPollEvents();

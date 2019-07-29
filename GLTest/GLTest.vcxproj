@@ -125,12 +125,14 @@
     <ClCompile Include="..\includes\glm\detail\dummy.cpp" />
     <ClCompile Include="..\includes\glm\detail\glm.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CameraDemo.cpp" />
     <ClCompile Include="FlightDemo.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="PointDemo.cpp" />
     <ClCompile Include="Shader_m.cpp" />
     <ClCompile Include="stb_image.cpp" />
+    <ClCompile Include="TextureDemo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="includes\glm\common.hpp" />
