@@ -6,7 +6,8 @@
 //#include <FlightDemo.cpp>
 //#include <PointDemo.cpp>
 //#include <TextureDemo.cpp>
-#include <CameraDemo.cpp>
+//#include <CameraDemo.cpp>
+#include <LightingDemo.cpp>
 
 #include <iostream>
 #include <string>
@@ -28,7 +29,7 @@ float lastX = width / 2.0f;
 float lastY = height / 2.0f;
 bool firstMouse = true;
 
-CameraDemo cameraDemo = CameraDemo(width,height);
+LightingDemo objDemo = LightingDemo(width,height);
 
 
 int main()
@@ -60,7 +61,7 @@ int main()
 	//FlightDemo(width, height, window);
 	//PointDemo(width, height, window);
 	//TextureDemo(width, height, window);
-	cameraDemo.init(window);
+	objDemo.init(window);
 
 	return 0;
 }
@@ -71,10 +72,10 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 }
 
 void mource_callback(GLFWwindow *window, double xpos, double ypos) {
-	cameraDemo.mource_callback(window, xpos, ypos);
+	objDemo.mource_callback(window, xpos, ypos);
 
 }
 
 void mource_scroll(GLFWwindow *window, double xpos, double ypos) {
-	cameraDemo.mource_scroll(window, xpos, ypos);
+	objDemo.mource_scroll(window, xpos, ypos);
 }

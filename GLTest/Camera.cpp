@@ -4,6 +4,7 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <iostream>
 
 #include <vector>
 
@@ -18,8 +19,8 @@ enum Camera_Movement {
 // Default camera values
 const float YAW = -90.0f;
 const float PITCH = 0.0f;
-const float SPEED = 2.0f;
-const float SENSITIVITY = 0.01f;
+const float SPEED = 2.5f;
+const float SENSITIVITY = 0.1f;
 const float ZOOM = 45.0f;
 
 
@@ -28,8 +29,8 @@ class Camera
 {
 public:
 	// Camera Attributes
-	glm::vec3 Position;
-	glm::vec3 Front;
+	glm::vec3 Position;  // 相机位置
+	glm::vec3 Front;  // 相机方向向量
 	glm::vec3 Up;
 	glm::vec3 Right;
 	glm::vec3 WorldUp;
@@ -60,24 +61,52 @@ public:
 		updateCameraVectors();
 	}
 
+	void setFront(glm::vec3 front) {
+		Front = front;
+	}
+
 	// Returns the view matrix calculated using Euler Angles and the LookAt Matrix
 	glm::mat4 GetViewMatrix()
 	{
+		glm::vec3 s = Position + Front;
+
 		return glm::lookAt(Position, Position + Front, Up);
+		//return glm::lookAt(Position, glm::vec3(0.0f,0.0f,0.0f), Up);
 	}
 
 	// Processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
 	void ProcessKeyboard(Camera_Movement direction, float deltaTime)
 	{
 		float velocity = MovementSpeed * deltaTime;
-		if (direction == FORWARD)
+
+		//float r = Position.z - Front.z;
+		//float rad = asin(velocity/14)*2; //弧度
+		//float angle = glm::degrees(rad);
+		//float x = sin(rad) * r;
+		//float z = (1-cos(rad)) * r;
+
+
+		if (direction == FORWARD) {
 			Position += Front * velocity;
-		if (direction == BACKWARD)
+		}
+		
+		if (direction == BACKWARD) {
 			Position -= Front * velocity;
-		if (direction == LEFT)
+		}
+		
+		if (direction == LEFT) {
 			Position -= Right * velocity;
-		if (direction == RIGHT)
+			//Position.x -= x;
+			//Position.z += z;
+			//Yaw += angle;
+		}
+		
+		if (direction == RIGHT) {
 			Position += Right * velocity;
+			//Position.x += x;
+			//Position.z -= z;
+			//Yaw -= angle;
+		}
 	}
 
 	// Processes input received from a mouse input system. Expects the offset value in both the x and y direction.

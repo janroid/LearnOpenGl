@@ -48,6 +48,9 @@
     <ClCompile Include="CameraDemo.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="LightingDemo.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
