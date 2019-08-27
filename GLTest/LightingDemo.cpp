@@ -23,8 +23,6 @@ public:
 	int width, height;
 	Camera camera = Camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
-	glm::vec3 sunPos = glm::vec3(0.5f, 0.5f, 3.0f);
-
 	float ambStrength = 0.1f; // 环境光
 	float specularStrength = 0.5f; // 镜面反射强度
 	float cutOff = 12.5f; // 聚光的角度
@@ -87,6 +85,13 @@ public:
 		glm::vec3(-1.3f,  1.0f, -1.5f)
 	};
 
+	glm::vec3 lightPos[4] = {
+		glm::vec3(0.7f,  0.2f,  2.0f),
+		glm::vec3(2.3f, -3.3f, -4.0f),
+		glm::vec3(-4.0f,  2.0f, -12.0f),
+		glm::vec3(0.0f,  0.0f, -3.0f)
+	};
+
 	LightingDemo(int w, int h) {
 		width = w;
 		height = h;
@@ -138,24 +143,48 @@ public:
 		glm::vec3 ourColor = glm::vec3(1.0f, 0.5f, 0.31f);
 
 		ourShader.use();
-		ourShader.setVec3("mater.ambField", 1.0f, 0.5f, 0.31f);
 		ourShader.setFloat("mater.shininess", 32.0f);
 
 		ourShader.setInt("mater.diffField", 0);
 		ourShader.setInt("mater.specField", 1);
+		// 平行光
+		ourShader.setVec3("dirLight.lightDir", -0.2f, -1.0f, -0.3f);
+		ourShader.setVec3("dirLight.ambColor", 0.05f, 0.05f, 0.05f);
+		ourShader.setVec3("dirLight.diffColor", 0.4f, 0.4f, 0.4f);
+		ourShader.setVec3("dirLight.specColor", 0.5f, 0.5f, 0.5f);
 
-		ourShader.setVec3("sun.sunDire", -0.2f, -1.0f, -0.3f);
-		ourShader.setVec3("sun.ambColor", 0.2f, 0.2f, 0.2f);
-		ourShader.setVec3("sun.diffColor", 0.5f, 0.5f, 0.5f); // 将光照调暗了一些以搭配场景
-		ourShader.setVec3("sun.specColor", 1.0f, 1.0f, 1.0f);
-
-		ourShader.setFloat("sun.constant", 1.0f);
-		ourShader.setFloat("sun.linear", 0.09f);
-		ourShader.setFloat("sun.quadratic", 0.032f);
-
-		// 聚光
-		ourShader.setFloat("sun.cutOff", glm::cos(glm::radians(cutOff)));
-		ourShader.setFloat("sun.outOff",glm::cos(glm::radians(outOff)));
+		// point light 1
+		ourShader.setVec3("pointLight[0].pos", lightPos[0]);
+		ourShader.setVec3("pointLight[0].ambColor", 0.05f, 0.05f, 0.05f);
+		ourShader.setVec3("pointLight[0].diffColor", 0.8f, 0.8f, 0.8f);
+		ourShader.setVec3("pointLight[0].specColor", 1.0f, 1.0f, 1.0f);
+		ourShader.setFloat("pointLight[0].constant", 1.0f);
+		ourShader.setFloat("pointLight[0].linear", 0.09);
+		ourShader.setFloat("pointLight[0].quadratic", 0.032);
+		// point light 2
+		ourShader.setVec3("pointLight[1].pos", lightPos[1]);
+		ourShader.setVec3("pointLight[1].ambColor", 0.05f, 0.05f, 0.05f);
+		ourShader.setVec3("pointLight[1].diffColor", 0.8f, 0.8f, 0.8f);
+		ourShader.setVec3("pointLight[1].specColor", 1.0f, 1.0f, 1.0f);
+		ourShader.setFloat("pointLight[1].constant", 1.0f);
+		ourShader.setFloat("pointLight[1].linear", 0.09);
+		ourShader.setFloat("pointLight[1].quadratic", 0.032);
+		// point light 3
+		ourShader.setVec3("pointLight[2].pos", lightPos[2]);
+		ourShader.setVec3("pointLight[2].ambColor", 0.05f, 0.05f, 0.05f);
+		ourShader.setVec3("pointLight[2].diffColor", 0.8f, 0.8f, 0.8f);
+		ourShader.setVec3("pointLight[2].specColor", 1.0f, 1.0f, 1.0f);
+		ourShader.setFloat("pointLight[2].constant", 1.0f);
+		ourShader.setFloat("pointLight[2].linear", 0.09);
+		ourShader.setFloat("pointLight[2].quadratic", 0.032);
+		// point light 4
+		ourShader.setVec3("pointLight[3].pos", lightPos[3]);
+		ourShader.setVec3("pointLight[3].ambColor", 0.05f, 0.05f, 0.05f);
+		ourShader.setVec3("pointLight[3].diffColor", 0.8f, 0.8f, 0.8f);
+		ourShader.setVec3("pointLight[3].specColor", 1.0f, 1.0f, 1.0f);
+		ourShader.setFloat("pointLight[3].constant", 1.0f);
+		ourShader.setFloat("pointLight[3].linear", 0.09);
+		ourShader.setFloat("pointLight[3].quadratic", 0.032);
 
 		sunShader.use();
 		sunShader.setVec3("sunColor", sunColor);
@@ -187,15 +216,23 @@ public:
 			ourShader.setMat4("projection", projection);
 			ourShader.setMat4("view", view);
 			ourShader.setVec3("cameraPos", camera.Position);
-			ourShader.setVec3("sun.cFront", camera.Front);
+
+			// spot light
+			ourShader.setVec3("spotLight.ambColor", 0.0f, 0.0f, 0.0f);
+			ourShader.setVec3("spotLight.diffColor", 1.0f, 1.0f, 1.0f);
+			ourShader.setVec3("spotLight.specColor", 1.0f, 1.0f, 1.0f);
+			ourShader.setFloat("spotLight.constant", 1.0f);
+			ourShader.setFloat("spotLight.linear", 0.09);
+			ourShader.setFloat("spotLight.quadratic", 0.032);
+			ourShader.setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
+			ourShader.setFloat("spotLight.outOff", glm::cos(glm::radians(15.0f)));
+			ourShader.setVec3("spotLight.dir", camera.Front);
 
 			//glm::vec3 mpos = glm::vec3(1.0f);
 			//mpos.x = sunPos.x*cos(glm::radians(angle)) + sunPos.z * sin(glm::radians(angle));
 			//mpos.y = sunPos.y;
 			//mpos.z = sunPos.z * cos(glm::radians(angle)) - sunPos.x * sin(glm::radians(angle));
 			//ourShader.setVec3("sun.sunPos", mpos);
-
-			ourShader.setVec3("sun.sunPos", sunPos);
 
 			for (int i = 0; i < 10; i++) {
 				model = glm::mat4(1.0f);
@@ -214,19 +251,18 @@ public:
 			sunShader.use();
 			sunShader.setMat4("projection", projection);
 			sunShader.setMat4("view", view);
-			model = glm::mat4(1.0f);
-			//model = glm::rotate(model, glm::radians(angle), glm::vec3(0.0f, 1.0f, 0.0f));
-			model = glm::translate(model, sunPos);
-			model = glm::scale(model, glm::vec3(0.2f));
-			
-			sunShader.setMat4("model", model);
 
-			
+			for (int i = 0; i < sizeof(lightPos); i++) {
+				model = glm::mat4(1.0f);
+				model = glm::translate(model, lightPos[i]);
+				model = glm::scale(model, glm::vec3(0.2f));
 
-			glBindVertexArray(sunVAO);
-			glDrawArrays(GL_TRIANGLES, 0, 36);
+				sunShader.setMat4("model", model);
 
+				glBindVertexArray(sunVAO);
+				glDrawArrays(GL_TRIANGLES, 0, 36);
 
+			}	
 
 			glfwSwapBuffers(window);
 			glfwPollEvents();
