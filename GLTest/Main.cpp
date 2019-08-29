@@ -7,7 +7,8 @@
 //#include <PointDemo.cpp>
 //#include <TextureDemo.cpp>
 //#include <CameraDemo.cpp>
-#include <LightingDemo.cpp>
+//#include <LightingDemo.cpp>
+#include <AssimpDemo.cpp>
 
 #include <iostream>
 #include <string>
@@ -15,6 +16,8 @@
 #include <glm\glm.hpp>
 #include <glm\gtc\matrix_transform.hpp>
 #include <glm\gtc\type_ptr.hpp>
+
+#include<assimp\scene.h>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -29,7 +32,7 @@ float lastX = width / 2.0f;
 float lastY = height / 2.0f;
 bool firstMouse = true;
 
-LightingDemo objDemo = LightingDemo(width,height);
+AssimpDemo objDemo = AssimpDemo(width,height);
 
 
 int main()

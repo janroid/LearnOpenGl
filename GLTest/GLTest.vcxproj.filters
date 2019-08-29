@@ -51,6 +51,15 @@
     <ClCompile Include="LightingDemo.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="AssimpDemo.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
