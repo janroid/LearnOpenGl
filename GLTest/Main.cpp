@@ -8,7 +8,8 @@
 //#include <TextureDemo.cpp>
 //#include <CameraDemo.cpp>
 //#include <LightingDemo.cpp>
-#include <AssimpDemo.cpp>
+//#include <AssimpDemo.cpp>
+#include <BlendDemo.cpp>
 
 #include <iostream>
 #include <string>
@@ -32,7 +33,7 @@ float lastX = width / 2.0f;
 float lastY = height / 2.0f;
 bool firstMouse = true;
 
-AssimpDemo objDemo = AssimpDemo(width,height);
+BlendDemo objDemo = BlendDemo(width,height);
 
 
 int main()

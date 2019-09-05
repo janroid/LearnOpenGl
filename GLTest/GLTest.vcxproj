@@ -125,6 +125,7 @@
     <ClCompile Include="..\includes\glm\detail\dummy.cpp" />
     <ClCompile Include="..\includes\glm\detail\glm.cpp" />
     <ClCompile Include="AssimpDemo.cpp" />
+    <ClCompile Include="BlendDemo.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CameraDemo.cpp" />
     <ClCompile Include="FlightDemo.cpp" />
