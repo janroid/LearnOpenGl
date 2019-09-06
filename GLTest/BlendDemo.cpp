@@ -6,6 +6,8 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
+#include <map>
 
 #include <Camera.cpp>
 #include <Shader_m.cpp>
@@ -73,6 +75,17 @@ public:
          5.0f, -0.5f, -5.0f,  2.0f, 2.0f								
     };
 
+	float grassVertices[30] = {
+		// positions         // texture Coords (swapped y coordinates because texture is flipped upside down)
+		0.0f,  0.5f,  0.0f,  0.0f,  0.0f,
+		0.0f, -0.5f,  0.0f,  0.0f,  1.0f,
+		1.0f, -0.5f,  0.0f,  1.0f,  1.0f,
+
+		0.0f,  0.5f,  0.0f,  0.0f,  0.0f,
+		1.0f, -0.5f,  0.0f,  1.0f,  1.0f,
+		1.0f,  0.5f,  0.0f,  1.0f,  0.0f
+	};
+
 
 	BlendDemo(float w, float h)
 	{
@@ -84,16 +97,19 @@ public:
 	void init(GLFWwindow* window) {
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_STENCIL_TEST);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); // Òþ²ØÊó±ê½Åµæ
 
 		unsigned int cubeTex = loadTexture("D:/VSWorkspace/LearnGL/res/marble.jpg",GL_REPEAT);
 		unsigned int planeTex = loadTexture("D:/VSWorkspace/LearnGL/res/metal.png", GL_REPEAT);
+		unsigned int grassTex = loadTexture("D:/VSWorkspace/LearnGL/res/window.png", GL_REPEAT);
 
 		Shader_m ourShader = Shader_m("D:/VSWorkspace/LearnGL/shader/BlendVerShader.shader", "D:/VSWorkspace/LearnGL/shader/BlendFrameShader.shader");
 		Shader_m stenShader = Shader_m("D:/VSWorkspace/LearnGL/shader/BlendVerShader.shader", "D:/VSWorkspace/LearnGL/shader/StencilFrameShader.shader");
 
-		unsigned int CVAO,PVAO, CVBO, PVBO;
+		unsigned int CVAO,PVAO, CVBO, PVBO,GVAO,GVBO;
 
 		glGenVertexArrays(1, &CVAO);
 		glGenBuffers(1, &CVBO);
@@ -122,7 +138,31 @@ public:
 		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 		glEnableVertexAttribArray(1);
 
-		
+
+		glGenVertexArrays(1, &GVAO);
+		glGenBuffers(1, &GVBO);
+
+		glBindVertexArray(GVAO);
+		glBindBuffer(GL_ARRAY_BUFFER, GVBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(grassVertices), grassVertices, GL_STATIC_DRAW);
+
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
+
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+		glEnableVertexAttribArray(1);
+
+
+		glm::vec3 array[5] = {
+			glm::vec3(-1.5f, 0.0f, -0.48f),
+			glm::vec3(1.5f, 0.0f, 0.51f),
+			glm::vec3(0.0f, 0.0f, 0.7f),
+			glm::vec3(-0.3f, 0.0f, -2.3f),
+			glm::vec3(0.5f, 0.0f, -0.6f)
+		};
+
+		ourShader.use();
+		ourShader.setInt("aTexture", 0);
 
 		while (!glfwWindowShouldClose(window)) {
 			deltaTime = glfwGetTime() - curTime;
@@ -133,6 +173,14 @@ public:
 			glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 		
+			std::map<float, glm::vec3> windowMap;
+
+			for (int i = 0; i < 5; i++) {
+				float distance = glm::length(camera.Position - array[i]);
+				windowMap[distance] = array[i];
+
+			}
+
 			ourShader.use();
 
 			glm::mat4 view = glm::mat4(1.0f);
@@ -174,6 +222,19 @@ public:
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 			glBindVertexArray(0);
 
+			// »­²Ý
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, grassTex);
+			glBindVertexArray(GVAO);
+			for (std::map<float, glm::vec3>::reverse_iterator i = windowMap.rbegin(); i != windowMap.rend(); ++i) {
+				model = glm::mat4(1.0f);
+				model = glm::translate(model, i->second);
+				ourShader.setMat4("model", model);
+
+				glDrawArrays(GL_TRIANGLES, 0, 6);
+			}
+			glBindVertexArray(0);
+
 			// »­±ß¿ò
 			glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 			glStencilMask(0x00);
@@ -197,7 +258,6 @@ public:
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 			glBindVertexArray(0);
 
-
 			glStencilMask(0xFF);
 			glEnable(GL_DEPTH_TEST);
 
@@ -210,6 +270,8 @@ public:
 		glDeleteBuffers(1, &CVBO);
 		glDeleteVertexArrays(1, &PVAO);
 		glDeleteBuffers(1, &PVBO);
+		glDeleteVertexArrays(1, &GVAO);
+		glDeleteBuffers(1, &GVBO);
 	}
 
 	unsigned int  loadTexture(std::string path, GLint wrap) {
@@ -218,7 +280,7 @@ public:
 
 		//¼ÓÔØÎÆÀí
 		int width, height, nrChannels;
-		stbi_set_flip_vertically_on_load(true);// ·­×ªÍ¼Æ¬
+		//stbi_set_flip_vertically_on_load(true);// ·­×ªÍ¼Æ¬
 		unsigned char *data = stbi_load(path.c_str(), &width, &height, &nrChannels, 0);
 
 		if (data)
