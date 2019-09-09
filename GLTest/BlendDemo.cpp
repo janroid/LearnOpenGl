@@ -177,8 +177,8 @@ public:
 		ourShader.setInt("aTexture", 0);
 
 		frameShader.use();
-		frameShader.setInt("aTexture", 0);
-
+		frameShader.setInt("fTexture", 0);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		while (!glfwWindowShouldClose(window)) {
 			deltaTime = glfwGetTime() - curTime;
 			curTime = glfwGetTime();
