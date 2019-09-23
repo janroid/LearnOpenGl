@@ -98,7 +98,7 @@ public:
 
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); // Òþ²ØÊó±ê½Åµæ
 
-		unsigned int cubeTex = loadTexture("D:/VSWorkspace/LearnGL/res/marble.jpg",GL_REPEAT);
+		unsigned int cubeTex = loadTexture("D:/VSWorkspace/LearnGL/res/box.png",GL_REPEAT);
 		unsigned int planeTex = loadTexture("D:/VSWorkspace/LearnGL/res/metal.png", GL_REPEAT);
 
 		Shader_m ourShader = Shader_m("D:/VSWorkspace/LearnGL/shader/BlendVerShader.shader", "D:/VSWorkspace/LearnGL/shader/BlendFrameShader.shader");
@@ -133,7 +133,7 @@ public:
 		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 		glEnableVertexAttribArray(1);
 
-
+		// Ö¡»º´æ
 		glGenVertexArrays(1, &FVAO);
 		glGenBuffers(1, &FVBO);
 
@@ -178,7 +178,7 @@ public:
 
 		frameShader.use();
 		frameShader.setInt("fTexture", 0);
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		while (!glfwWindowShouldClose(window)) {
 			deltaTime = glfwGetTime() - curTime;
 			curTime = glfwGetTime();
