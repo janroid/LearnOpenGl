@@ -1,11 +1,16 @@
 #version 330 core
 
-in vec2 fTexCoord;
+in vec3 fNormal;
+in vec3 fPos;
 
 out vec4 FragColor;
 
-uniform sampler2D aTexture;
+uniform samplerCube aTexture;
+uniform vec3 cameraPos;
 
 void main(){
-    FragColor = texture(aTexture, fTexCoord);
+    float ratio = 1.00 / 1.52;
+    vec3 pos = normalize(fPos - cameraPos);
+    vec3 R = refract(pos,normalize(fNormal),ratio);
+    FragColor = vec4(texture(aTexture, R).rgb,1.0);
 }
