@@ -178,6 +178,15 @@ public:
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 		glEnableVertexAttribArray(0);
 
+		// uniform ±äÁ¿
+		unsigned int uniID;
+		glGenBuffers(1, &uniID);
+
+		glBindBuffer(GL_UNIFORM_BUFFER, uniID);
+		glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), NULL, GL_STATIC_DRAW);
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+		glBindBufferRange(GL_UNIFORM_BUFFER, 0, uniID, 0, 2 * sizeof(glm::mat4));
+
 
 		//// Ö¡»º´æ
 		glGenVertexArrays(1, &FVAO);
@@ -221,9 +230,14 @@ public:
 
 		ourShader.use();
 		ourShader.setInt("aTexture", 0);
+		unsigned vid = glGetUniformBlockIndex(ourShader.ID, "Matrices");
+		glUniformBlockBinding(ourShader.ID, vid, 0);
 
 		skyShader.use();
 		skyShader.setInt("skybox", 0);
+
+		unsigned svid = glGetUniformBlockIndex(skyShader.ID, "Matrices");
+		glUniformBlockBinding(skyShader.ID, svid, 0);
 
 		frameShader.use();
 		frameShader.setInt("fTexture", 0);
@@ -246,10 +260,14 @@ public:
 			view = camera.GetViewMatrix();
 			projection = glm::perspective(glm::radians(camera.Zoom), width / height, 0.1f, 100.0f);
 
+			glBindBuffer(GL_UNIFORM_BUFFER, uniID);
+			glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(view));
+			glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(projection));
+			glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+
 			// »­Ïä×Ó
 			ourShader.use();
-			ourShader.setMat4("view", view);
-			ourShader.setMat4("projection", projection);
 			ourShader.setVec3("cameraPos", camera.Position);
 
 			glBindVertexArray(CVAO);
@@ -271,9 +289,6 @@ public:
 
 			skyShader.use();
 			model = glm::mat4(1.0f);
-			glm::mat4 v = glm::mat4(glm::mat3(camera.GetViewMatrix()));
-			skyShader.setMat4("view", v);
-			skyShader.setMat4("projection", projection);
 			skyShader.setMat4("model", model);
 
 			glBindVertexArray(SVAO);
