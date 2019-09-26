@@ -63,6 +63,9 @@
     <ClCompile Include="BlendDemo.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="GeometryDemo.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">

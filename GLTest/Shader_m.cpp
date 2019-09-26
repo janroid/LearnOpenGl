@@ -20,56 +20,8 @@ public:
 
 	Shader_m(const char* vertexPath, const char* framentPath)
 	{
-		std::string vertexCode;
-		std::string fragmentCode;
-		std::ifstream vShaderFile;
-		std::ifstream fShaderFile;
-
-		vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-		fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-
-		try
-		{
-			// 打开文件
-			vShaderFile.open(vertexPath);
-			fShaderFile.open(framentPath);
-			std::stringstream vShaderStream, fShaderStream;
-
-			// 读取文件流的缓冲内容到数据流中
-			vShaderStream << vShaderFile.rdbuf();
-			fShaderStream << fShaderFile.rdbuf();
-
-			//关闭文件处理器
-			vShaderFile.close();
-			fShaderFile.close();
-
-			//转换数据流到string
-			vertexCode = vShaderStream.str();
-			fragmentCode = fShaderStream.str();
-
-		}
-		catch (const std::exception&)
-		{
-			std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ" << std::endl;
-		}
-
-		const char* vShaderCode = vertexCode.c_str();
-		const char* fShaderCode = fragmentCode.c_str();
-
-		// 编译着色器
-		unsigned int vertex, fragment;
-
-
-		//定点着色器
-		vertex = glCreateShader(GL_VERTEX_SHADER);
-		glShaderSource(vertex, 1, &vShaderCode, NULL);
-		glCompileShader(vertex);
-		checkCompileErrors(vertex, "VERTEX");
-
-		fragment = glCreateShader(GL_FRAGMENT_SHADER);
-		glShaderSource(fragment, 1, &fShaderCode, NULL);
-		glCompileShader(fragment);
-		checkCompileErrors(fragment, "FRAGMENT");
+		unsigned int vertex = createVexShder(vertexPath);
+		unsigned int fragment = createFrameShder(framentPath);
 
 		ID = glCreateProgram();
 		glAttachShader(ID, vertex);
@@ -79,6 +31,24 @@ public:
 
 		glDeleteShader(vertex);
 		glDeleteShader(fragment);
+
+	}
+
+	Shader_m(const char* vs, const char* fs, const char* gs) {
+		unsigned int vertex = createVexShder(vs);
+		unsigned int fragment = createFrameShder(fs);
+		unsigned int geometry = createGHShder(gs);
+
+		ID = glCreateProgram();
+		glAttachShader(ID, vertex);
+		glAttachShader(ID, fragment);
+		glAttachShader(ID, geometry);
+		glLinkProgram(ID);
+		checkCompileErrors(ID, "PROGRAM");
+
+		glDeleteShader(vertex);
+		glDeleteShader(fragment);
+		glDeleteShader(geometry);
 	}
 
 	void use() {
@@ -139,6 +109,129 @@ private:
 		}
 
 
+	}
+
+	unsigned int createFrameShder(const char* framentPath) {
+		std::string fragmentCode;
+		std::ifstream fShaderFile;
+
+		fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+
+		try
+		{
+			// 打开文件
+			fShaderFile.open(framentPath);
+			std::stringstream fShaderStream;
+
+			// 读取文件流的缓冲内容到数据流中
+			fShaderStream << fShaderFile.rdbuf();
+
+			//关闭文件处理器
+			fShaderFile.close();
+
+			//转换数据流到string
+			fragmentCode = fShaderStream.str();
+
+		}
+		catch (const std::exception&)
+		{
+			std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ" << std::endl;
+		}
+
+		const char* fShaderCode = fragmentCode.c_str();
+
+		// 编译着色器
+		unsigned int fragment;
+
+		fragment = glCreateShader(GL_FRAGMENT_SHADER);
+		glShaderSource(fragment, 1, &fShaderCode, NULL);
+		glCompileShader(fragment);
+		checkCompileErrors(fragment, "FRAGMENT");
+
+		return fragment;
+	}
+
+	unsigned int createVexShder(const char* vertexPath) {
+		std::string vertexCode;
+		std::ifstream vShaderFile;
+
+		vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+
+		try
+		{
+			// 打开文件
+			vShaderFile.open(vertexPath);
+			std::stringstream vShaderStream;
+
+			// 读取文件流的缓冲内容到数据流中
+			vShaderStream << vShaderFile.rdbuf();
+
+			//关闭文件处理器
+			vShaderFile.close();
+
+			//转换数据流到string
+			vertexCode = vShaderStream.str();
+
+		}
+		catch (const std::exception&)
+		{
+			std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ" << std::endl;
+		}
+
+		const char* vShaderCode = vertexCode.c_str();
+
+		// 编译着色器
+		unsigned int vertex;
+
+
+		//定点着色器
+		vertex = glCreateShader(GL_VERTEX_SHADER);
+		glShaderSource(vertex, 1, &vShaderCode, NULL);
+		glCompileShader(vertex);
+		checkCompileErrors(vertex, "VERTEX");
+
+		return vertex;
+	}
+
+	unsigned int createGHShder(const char* ghPath) {
+		std::string ghCode;
+		std::ifstream ghShaderFile;
+
+		ghShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+
+		try
+		{
+			// 打开文件
+			ghShaderFile.open(ghPath);
+			std::stringstream gShaderStream;
+
+			// 读取文件流的缓冲内容到数据流中
+			gShaderStream << ghShaderFile.rdbuf();
+
+			//关闭文件处理器
+			ghShaderFile.close();
+
+			//转换数据流到string
+			ghCode = gShaderStream.str();
+
+		}
+		catch (const std::exception&)
+		{
+			std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ" << std::endl;
+		}
+		const char* gShaderCode = ghCode.c_str();
+
+		// 编译着色器
+		unsigned int geometry;
+
+
+		//几何着色器
+		geometry = glCreateShader(GL_GEOMETRY_SHADER);
+		glShaderSource(geometry, 1, &gShaderCode, NULL);
+		glCompileShader(geometry);
+		checkCompileErrors(geometry, "geometry");
+
+		return geometry;
 	}
 };
 

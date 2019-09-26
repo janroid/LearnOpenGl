@@ -129,6 +129,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CameraDemo.cpp" />
     <ClCompile Include="FlightDemo.cpp" />
+    <ClCompile Include="GeometryDemo.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="LightingDemo.cpp" />
     <ClCompile Include="Main.cpp" />

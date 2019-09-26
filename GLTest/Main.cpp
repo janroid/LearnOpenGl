@@ -9,7 +9,8 @@
 //#include <CameraDemo.cpp>
 //#include <LightingDemo.cpp>
 //#include <AssimpDemo.cpp>
-#include <BlendDemo.cpp>
+//#include <BlendDemo.cpp>
+#include <GeometryDemo.cpp>
 
 #include <iostream>
 #include <string>
@@ -33,7 +34,7 @@ float lastX = width / 2.0f;
 float lastY = height / 2.0f;
 bool firstMouse = true;
 
-BlendDemo objDemo = BlendDemo(width,height);
+GeometryDemo objDemo = GeometryDemo(width,height);
 
 
 int main()
