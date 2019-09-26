@@ -2,7 +2,6 @@
 #include <GLFW\glfw3.h>
 #include <glad\glad.h>
 #include <GLFW\glfw3.h>
-#include <stb_image.h>
 
 #include <iostream>
 #include <string>
@@ -11,6 +10,9 @@
 
 #include <Camera.cpp>
 #include <Shader_m.cpp>
+
+#include <Model.cpp>
+#include <Mesh.cpp>
 
 using namespace std;
 
@@ -37,26 +39,10 @@ public:
 
 	void init(GLFWwindow* window) {
 		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_PROGRAM_POINT_SIZE);
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); // Òþ²ØÊó±ê½Åµæ
 	
 		Shader_m goShader = Shader_m("D:/VSWorkspace/LearnGL/shader/GoVerShader.shader", "D:/VSWorkspace/LearnGL/shader/GoFrameShader.shader", "D:/VSWorkspace/LearnGL/shader/GoShader.shader");
-
-		unsigned VAO, VBO;
-		glGenVertexArrays(1, &VAO);
-		glGenBuffers(1, &VBO);
-
-		glBindVertexArray(VAO);
-
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2*sizeof(float)));
-		
-		glBindVertexArray(0);
-
+		Model manModel = Model("D:/VSWorkspace/LearnGL/res/nanosuit.obj");
 
 		while (!glfwWindowShouldClose(window)) {
 			deltaTime = glfwGetTime() - curTime;
@@ -67,17 +53,23 @@ public:
 			glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			goShader.use();
-			glBindVertexArray(VAO);
-			glDrawArrays(GL_POINTS, 0, 4);
-			
+			glm::mat4 view = camera.GetViewMatrix();
+			glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
+			glm::mat4 model = glm::mat4(1.0f);
 
+			goShader.use();
+			goShader.setMat4("model",model);
+			goShader.setMat4("veiw",view);
+			goShader.setMat4("projection",projection);
+			goShader.setFloat("mtime",glfwGetTime());
+			
+			manModel.draw(&goShader);
 
 			glfwSwapBuffers(window);
 			glfwPollEvents();
 
 		}
-
+		glfwTerminate();
 	}
 
 	unsigned int  loadTexture(std::string path, GLint wrap) {

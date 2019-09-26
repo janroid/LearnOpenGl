@@ -27,8 +27,8 @@ void mource_callback(GLFWwindow *window, double xpos, double ypos);
 void mource_scroll(GLFWwindow *window, double xpos, double ypos);
 unsigned int loadTexture(std::string path);
 
-int width = 800;
-int height = 600;
+int width = 1280;
+int height = 720;
 
 float lastX = width / 2.0f;
 float lastY = height / 2.0f;

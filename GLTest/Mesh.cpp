@@ -59,6 +59,9 @@ public:
 				specN++;
 
 			}
+
+			//cout << "Mesh::draw::" << tmp.c_str() << endl;
+
 			shader->setFloat(("material." + tmp).c_str(), i);
 
 			glBindTexture(GL_TEXTURE_2D, textures[i].id);
