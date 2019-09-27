@@ -42,6 +42,7 @@ public:
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); // Òþ²ØÊó±ê½Åµæ
 	
 		Shader_m goShader = Shader_m("D:/VSWorkspace/LearnGL/shader/GoVerShader.shader", "D:/VSWorkspace/LearnGL/shader/GoFrameShader.shader", "D:/VSWorkspace/LearnGL/shader/GoShader.shader");
+		Shader_m manShader = Shader_m("D:/VSWorkspace/LearnGL/shader/GomanVerShader.shader", "D:/VSWorkspace/LearnGL/shader/GomanFrameShader.shader");
 		Model manModel = Model("D:/VSWorkspace/LearnGL/res/nanosuit.obj");
 
 		curTime = glfwGetTime();
@@ -60,13 +61,20 @@ public:
 			model = glm::translate(model, glm::vec3(0.0f, -1.75f, 0.0f)); // translate it down so it's at the center of the scene
 			model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));	// it's a bit too big for our scene, so scale it down
 
-			goShader.use();
-			goShader.setMat4("model",model);
-			goShader.setMat4("view",view);
-			goShader.setMat4("projection",projection);
-			goShader.setFloat("mtime",glfwGetTime());
+			manShader.use();
+			manShader.setMat4("model", model);
+			manShader.setMat4("view", view);
+			manShader.setMat4("projection", projection);
 			
+			manModel.draw(&manShader);
+
+			goShader.use();
+			goShader.setMat4("model", model);
+			goShader.setMat4("view", view);
+			goShader.setMat4("projection", projection);
+
 			manModel.draw(&goShader);
+
 
 			glfwSwapBuffers(window);
 			glfwPollEvents();

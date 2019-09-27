@@ -1,45 +1,25 @@
 #version 330 core
 
 layout (triangles) in;
-layout (triangle_strip, max_vertices = 3) out;
+layout (line_strip, max_vertices = 6) out;
 
 in VS_OUT{
-    vec2 texCoords;
+    vec3 gNormal;
 } gs_in[];
 
-uniform float mtime;
-out vec2 fTexCoords;
+void GenerateLine(int index){
+    gl_Position = gl_in[index].gl_Position;
+    EmitVertex();
 
-vec3 getNormal()
-{    
-    vec3 a = vec3(gl_in[0].gl_Position) - vec3(gl_in[1].gl_Position);
-    vec3 b = vec3(gl_in[2].gl_Position) - vec3(gl_in[1].gl_Position);
+    gl_Position = gl_in[index].gl_Position + vec4(gs_in[index].gNormal, 0.0) * 0.04;
+    EmitVertex();
+    EndPrimitive();
 
-    return normalize(cross(a,b));
-}
-
-vec4 explode(vec4 position,vec3 normal)
-{
-    float t = 2.0f;
-    vec3 direction = normal * ((sin(mtime) + 1.0) / 2.0) * t;
-
-    return position + vec4(direction, 0.0);
 }
 
 void main(){
-    vec3 normal = getNormal();
-
-    gl_Position = explode(gl_in[0].gl_Position, normal);
-    fTexCoords = gs_in[0].texCoords;
-    EmitVertex();
-
-    gl_Position = explode(gl_in[1].gl_Position, normal);
-    fTexCoords = gs_in[1].texCoords;
-    EmitVertex();
-
-    gl_Position = explode(gl_in[2].gl_Position, normal);
-    fTexCoords = gs_in[2].texCoords;
-    EmitVertex();
-    EndPrimitive();
+    GenerateLine(0);
+    GenerateLine(1);
+    GenerateLine(2);
 
 }
