@@ -44,6 +44,7 @@ public:
 		Shader_m goShader = Shader_m("D:/VSWorkspace/LearnGL/shader/GoVerShader.shader", "D:/VSWorkspace/LearnGL/shader/GoFrameShader.shader", "D:/VSWorkspace/LearnGL/shader/GoShader.shader");
 		Model manModel = Model("D:/VSWorkspace/LearnGL/res/nanosuit.obj");
 
+		curTime = glfwGetTime();
 		while (!glfwWindowShouldClose(window)) {
 			deltaTime = glfwGetTime() - curTime;
 			curTime = glfwGetTime();
@@ -54,12 +55,14 @@ public:
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			glm::mat4 view = camera.GetViewMatrix();
-			glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
+			glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)width / (float)height, 0.1f, 100.0f);
 			glm::mat4 model = glm::mat4(1.0f);
+			model = glm::translate(model, glm::vec3(0.0f, -1.75f, 0.0f)); // translate it down so it's at the center of the scene
+			model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));	// it's a bit too big for our scene, so scale it down
 
 			goShader.use();
 			goShader.setMat4("model",model);
-			goShader.setMat4("veiw",view);
+			goShader.setMat4("view",view);
 			goShader.setMat4("projection",projection);
 			goShader.setFloat("mtime",glfwGetTime());
 			
