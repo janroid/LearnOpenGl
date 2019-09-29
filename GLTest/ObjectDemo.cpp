@@ -16,34 +16,90 @@
 
 using namespace std;
 
-class GeometryDemo {
+class ObjectDemo
+{
 	float curTime, deltaTime;
 	float width, height;
-	Camera camera = Camera(glm::vec3(0.0f, 0.0f, 3.0f));
-	
+	Camera camera = Camera(glm::vec3(0.0f, 0.0f, 155.0f));
+
 public:
-
-	float points[20] = {
-	 -0.5f,  0.5f, 1.0f, 0.0f, 0.0f, // ◊Û…œ
-	 0.5f,  0.5f, 0.0f, 1.0f, 0.0f, // ”“…œ
-	 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, // ”“œ¬
-	-0.5f, -0.5f, 1.0f, 1.0f, 0.0f  // ◊Ûœ¬
-	};
-
-	GeometryDemo(float w, float h)
-	{
+	ObjectDemo(float w, float h) {
 		width = w;
 		height = h;
-
 	}
 
 	void init(GLFWwindow* window) {
 		glEnable(GL_DEPTH_TEST);
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); // “˛≤ÿ Û±ÍΩ≈µÊ
-	
-		Shader_m goShader = Shader_m("D:/VSWorkspace/LearnGL/shader/GoVerShader.shader", "D:/VSWorkspace/LearnGL/shader/GoFrameShader.shader", "D:/VSWorkspace/LearnGL/shader/GoShader.shader");
-		Shader_m manShader = Shader_m("D:/VSWorkspace/LearnGL/shader/GomanVerShader.shader", "D:/VSWorkspace/LearnGL/shader/GomanFrameShader.shader");
-		Model manModel = Model("D:/VSWorkspace/LearnGL/res/planet/planet.obj");
+
+		Shader_m saturnShader = Shader_m("D:/VSWorkspace/LearnGL/shader/ObjVerShader.shader", "D:/VSWorkspace/LearnGL/shader/ObjFrameShader.shader");
+		Shader_m mimasShader = Shader_m("D:/VSWorkspace/LearnGL/shader/ObjsVerShader.shader", "D:/VSWorkspace/LearnGL/shader/ObjsFrameShader.shader");
+		Model staturnModel = Model("D:/VSWorkspace/LearnGL/res/planet/planet.obj");
+		Model mimasModel = Model("D:/VSWorkspace/LearnGL/res/rock/rock.obj");
+
+		unsigned int amount = 10000;
+		glm::mat4* modelMatrices;
+		modelMatrices = new glm::mat4[amount];
+		srand(glfwGetTime()); // initialize random seed	
+		float radius = 150.0;
+		float offset = 25.0f;
+		for (unsigned int i = 0; i < amount; i++)
+		{
+			glm::mat4 model;
+			// 1. translation: displace along circle with 'radius' in range [-offset, offset]
+			float angle = (float)i / (float)amount * 360.0f;
+			float displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
+			float x = sin(angle) * radius + displacement;
+			displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
+			float y = displacement * 0.4f; // keep height of asteroid field smaller compared to width of x and z
+			displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
+			float z = cos(angle) * radius + displacement;
+			model = glm::translate(model, glm::vec3(x, y, z));
+
+			// 2. scale: Scale between 0.05 and 0.25f
+			float scale = (rand() % 20) / 100.0f + 0.05;
+			model = glm::scale(model, glm::vec3(scale));
+
+			// 3. rotation: add random rotation around a (semi)randomly picked rotation axis vector
+			float rotAngle = (rand() % 360);
+			model = glm::rotate(model, rotAngle, glm::vec3(0.4f, 0.6f, 0.8f));
+
+			// 4. now add to list of matrices
+			modelMatrices[i] = model;
+		}
+
+		unsigned int OVBO;
+		glGenBuffers(1, &OVBO);
+
+		glBindBuffer(GL_ARRAY_BUFFER, OVBO);
+		glBufferData(GL_ARRAY_BUFFER, amount*sizeof(glm::mat4), &modelMatrices[0], GL_STATIC_DRAW);
+
+		for (int i = 0; i < mimasModel.meshes.size(); i++) {
+			unsigned int VAO = mimasModel.meshes[i].VAO;
+
+			glBindVertexArray(VAO);
+
+			GLsizei vec4Size = sizeof(glm::vec4);
+			glEnableVertexAttribArray(3);
+			glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
+
+			glEnableVertexAttribArray(4);
+			glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)vec4Size);
+
+			glEnableVertexAttribArray(5);
+			glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2*vec4Size));
+
+			glEnableVertexAttribArray(6);
+			glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3*vec4Size));
+
+			glVertexAttribDivisor(3, 1);
+			glVertexAttribDivisor(4, 1);
+			glVertexAttribDivisor(5, 1);
+			glVertexAttribDivisor(6, 1);
+
+			glBindVertexArray(0);
+		}
+
 
 		curTime = glfwGetTime();
 		while (!glfwWindowShouldClose(window)) {
@@ -51,34 +107,40 @@ public:
 			curTime = glfwGetTime();
 
 			processInput(window);
-
 			glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			glm::mat4 view = camera.GetViewMatrix();
 			glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)width / (float)height, 0.1f, 100.0f);
+
+			mimasShader.use();
+			mimasShader.setMat4("view", view);
+			mimasShader.setMat4("projection", projection);
+
+			saturnShader.use();
+			saturnShader.setMat4("view", view);
+			saturnShader.setMat4("projection", projection);
+
 			glm::mat4 model = glm::mat4(1.0f);
-			model = glm::translate(model, glm::vec3(0.0f, -1.75f, 0.0f)); // translate it down so it's at the center of the scene
-			model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));	// it's a bit too big for our scene, so scale it down
-
-			manShader.use();
-			manShader.setMat4("model", model);
-			manShader.setMat4("view", view);
-			manShader.setMat4("projection", projection);
+			model = glm::translate(model, glm::vec3(0.0f, -3.0f, 0.0f));
+			model = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
+			saturnShader.setMat4("model",model);
 			
-			manModel.draw(&manShader);
+			staturnModel.draw(&saturnShader);
 
-			goShader.use();
-			goShader.setMat4("model", model);
-			goShader.setMat4("view", view);
-			goShader.setMat4("projection", projection);
-
-			manModel.draw(&goShader);
+			mimasShader.use();
+			mimasShader.setInt("texture_diffuse1", 0);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, mimasModel.textureLoaded[0].id);
+			for (int i = 0; i < mimasModel.meshes.size(); i++) {
+				glBindVertexArray(mimasModel.meshes[i].VAO);
+				glDrawElementsInstanced(GL_TRIANGLES, mimasModel.meshes[i].indices.size(), GL_UNSIGNED_INT, 0, amount);
+				glBindVertexArray(0);
+			}
 
 
 			glfwSwapBuffers(window);
 			glfwPollEvents();
-
 		}
 		glfwTerminate();
 	}
@@ -199,10 +261,7 @@ public:
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 			camera.ProcessKeyboard(RIGHT, deltaTime);
 	}
-
 private:
 
-
-
-
 };
+

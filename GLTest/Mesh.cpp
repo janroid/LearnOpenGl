@@ -30,6 +30,7 @@ class Mesh
 public:
 	const string TEXTURE_DIF = "texture_diffuse";
 	const string TEXTURE_SPEC = "texture_specular";
+	unsigned int VAO, VBO, EBO;
 
 	vector<Vertex> vertices;
 	vector<unsigned int> indices;
@@ -75,8 +76,6 @@ public:
 		glActiveTexture(GL_TEXTURE0);
 	}
 private:
-	unsigned int VAO, VBO, EBO;
-
 	void setupMesh() {
 		glGenVertexArrays(1, &VAO);
 		glGenBuffers(1, &VBO);
