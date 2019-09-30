@@ -37,7 +37,7 @@ public:
 		Model staturnModel = Model("D:/VSWorkspace/LearnGL/res/planet/planet.obj");
 		Model mimasModel = Model("D:/VSWorkspace/LearnGL/res/rock/rock.obj");
 
-		unsigned int amount = 10000;
+		unsigned int amount = 100000;
 		glm::mat4* modelMatrices;
 		modelMatrices = new glm::mat4[amount];
 		srand(glfwGetTime()); // initialize random seed	
@@ -111,7 +111,7 @@ public:
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			glm::mat4 view = camera.GetViewMatrix();
-			glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)width / (float)height, 0.1f, 100.0f);
+			glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)width / (float)height, 0.1f, 1000.0f);
 
 			mimasShader.use();
 			mimasShader.setMat4("view", view);
