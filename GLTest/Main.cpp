@@ -11,7 +11,8 @@
 //#include <AssimpDemo.cpp>
 //#include <BlendDemo.cpp>
 //#include <GeometryDemo.cpp>
-#include <ObjectDemo.cpp>
+//#include <ObjectDemo.cpp>
+#include <MultiDemo.cpp>
 
 #include <iostream>
 #include <string>
@@ -35,7 +36,7 @@ float lastX = width / 2.0f;
 float lastY = height / 2.0f;
 bool firstMouse = true;
 
-ObjectDemo objDemo = ObjectDemo(width,height);
+MultiDemo objDemo = MultiDemo(width,height);
 
 
 int main()
@@ -45,6 +46,7 @@ int main()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_SAMPLES, 4);
 
 	GLFWwindow* window = glfwCreateWindow(width, height, "JanRoid", NULL, NULL);
 	if (window == NULL) {
