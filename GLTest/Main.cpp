@@ -12,7 +12,8 @@
 //#include <BlendDemo.cpp>
 //#include <GeometryDemo.cpp>
 //#include <ObjectDemo.cpp>
-#include <MultiDemo.cpp>
+//#include <MultiDemo.cpp>
+#include <MappingDemo.cpp>
 
 #include <iostream>
 #include <string>
@@ -36,7 +37,7 @@ float lastX = width / 2.0f;
 float lastY = height / 2.0f;
 bool firstMouse = true;
 
-MultiDemo objDemo = MultiDemo(width,height);
+MappingDemo objDemo = MappingDemo(width,height);
 
 
 int main()
