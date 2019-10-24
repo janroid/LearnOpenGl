@@ -22,6 +22,7 @@ class MappingDemo {
 	int SHADER_WIDTH = 1024, SHADER_HEIGHT = 1024;
 
 	glm::vec3 lightPos = glm::vec3(-2.0f, 4.0f, -1.0f);
+	unsigned int PVAO, CVAO;
 
 public:
 
@@ -72,13 +73,13 @@ public:
 
 	float planeVertices[48] = {
 		// positions            // normals         // texcoords
-		 25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,  25.0f,  0.0f,
+		25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,  25.0f,  0.0f,
 		-25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,   0.0f,  0.0f,
 		-25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,   0.0f, 25.0f,
 
 		 25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,  25.0f,  0.0f,
 		-25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,   0.0f, 25.0f,
-		 25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,  25.0f, 10.0f
+		 25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,  25.0f, 25.0f
 	};
 
 	float quadVertices[20] = {
@@ -103,9 +104,10 @@ public:
 		unsigned int woodTexture = loadTexture("D:/VSWorkspace/LearnGL/res/wood.png", GL_REPEAT);
 		Shader_m mappShader = Shader_m("D:/VSWorkspace/LearnGL/shader/MappingVer.shader", "D:/VSWorkspace/LearnGL/shader/MappingFrame.shader");
 		Shader_m depthShader = Shader_m("D:/VSWorkspace/LearnGL/shader/MapDeVer.shader", "D:/VSWorkspace/LearnGL/shader/MapDeFrame.shader");
+		Shader_m qudShader = Shader_m("D:/VSWorkspace/LearnGL/shader/MapQudVer.shader", "D:/VSWorkspace/LearnGL/shader/MapQudFrame.shader");
 
 		// cube
-		unsigned int CVAO, CVBO;
+		unsigned int CVBO;
 		glGenVertexArrays(1, &CVAO);
 		glGenBuffers(1, &CVBO);
 
@@ -123,7 +125,7 @@ public:
 		glBindVertexArray(0);
 
 		// quad
-		unsigned int QVAO, QVBO;
+		unsigned int QVAO,QVBO;
 		glGenVertexArrays(1, &QVAO);
 		glGenBuffers(1, &QVBO);
 
@@ -139,7 +141,7 @@ public:
 		glBindVertexArray(0);
 
 		// floor
-		unsigned int PVAO, PVBO;
+		unsigned int PVBO;
 		glGenVertexArrays(1, &PVAO);
 		glGenBuffers(1, &PVBO);
 
@@ -153,8 +155,8 @@ public:
 		glEnableVertexAttribArray(1);
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
 
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 
 		glBindVertexArray(0);
 
@@ -170,8 +172,10 @@ public:
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADER_WIDTH, SHADER_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+		GLfloat borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
+		glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 		glBindTexture(GL_TEXTURE_2D, 0);
 
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, DTEU, 0);
@@ -185,6 +189,10 @@ public:
 		mappShader.use();
 		mappShader.setInt("fTexture", 0);
 
+		depthShader.use();
+		depthShader.setInt("fTexture", 0);
+		depthShader.setInt("lTexture", 1);
+
 	
 		while (!glfwWindowShouldClose(window))
 		{
@@ -196,7 +204,7 @@ public:
 			glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			glViewport(0, 0, width, height);
+			glViewport(0, 0, SHADER_WIDTH, SHADER_HEIGHT);
 			glBindFramebuffer(GL_FRAMEBUFFER, DFBO);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -205,54 +213,47 @@ public:
 			glm::mat4 lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 			glm::mat4 lightMatrix = lightProjection * lightView;
 
-			depthShader.use();
-			depthShader.setMat4("lightMatrix", lightMatrix);
+			qudShader.use();
+			qudShader.setMat4("lightMatrix", lightMatrix);
 
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, woodTexture);
-
-			// draw floor
-			glm::mat4 model = glm::mat4(1.0f);
-			depthShader.setMat4("model", model);
-			glBindVertexArray(PVAO);
-			glDrawArrays(GL_TRIANGLES, 0, 6);
-			glBindVertexArray(0);
-
-			// draw cube
-			model = glm::mat4(1.0f);
-			model = glm::translate(model, glm::vec3(0.0f, 1.5f, 0.0));
-			model = glm::scale(model, glm::vec3(0.5f));
-			depthShader.setMat4("model", model);
-			glBindVertexArray(CVAO);
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-			
-			model = glm::mat4(1.0f);
-			model = glm::translate(model, glm::vec3(2.0f, 0.0f, 1.0));
-			model = glm::scale(model, glm::vec3(0.5f));
-			depthShader.setMat4("model", model);
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-
-			model = glm::mat4(1.0f);
-			model = glm::translate(model, glm::vec3(-1.0f, 0.0f, 2.0));
-			model = glm::rotate(model, glm::radians(60.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
-			model = glm::scale(model, glm::vec3(0.25));
-			depthShader.setMat4("model", model);
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-			glBindVertexArray(0);
-
+			glCullFace(GL_FRONT);
+			renderScene(qudShader);
+			glCullFace(GL_BACK);
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 
-			glViewport(0, 0, SHADER_WIDTH, SHADER_HEIGHT);
+			glViewport(0, 0, width, height);
 			glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+
+			depthShader.use();
+			depthShader.setVec3("lightPos", lightPos);
+			depthShader.setVec3("viewPos", camera.Position);
+			depthShader.setMat4("lightMatrix", lightMatrix);
+
+			glm::mat4 view = camera.GetViewMatrix();
+			glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)width / (float)height, 0.1f, 100.0f);
+			depthShader.setMat4("view", view);
+			depthShader.setMat4("projection", projection);
+
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, DTEU);
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, woodTexture);
+			renderScene(depthShader);
+
+
 			mappShader.use();
+			mappShader.setFloat("near_plane", near_plane);
+			mappShader.setFloat("far_plane", far_plane);
 			glBindVertexArray(QVAO);
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, DTEU);
-			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-			glBindVertexArray(0);
+			//glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+			//glBindVertexArray(0);
 
 			glfwSwapBuffers(window);
 			glfwPollEvents();
@@ -265,6 +266,37 @@ public:
 		glDeleteBuffers(1, &PVBO);
 
 		glfwTerminate();
+	}
+
+	void renderScene(Shader_m shader) {
+		// draw floor
+		glm::mat4 model = glm::mat4(1.0f);
+		shader.setMat4("model", model);
+		glBindVertexArray(PVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glBindVertexArray(0);
+
+		// draw cube
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(0.0f, 1.5f, 0.0));
+		model = glm::scale(model, glm::vec3(0.5f));
+		shader.setMat4("model", model);
+		glBindVertexArray(CVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(2.0f, 0.0f, 1.0));
+		model = glm::scale(model, glm::vec3(0.5f));
+		shader.setMat4("model", model);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(-1.0f, 0.0f, 2.0));
+		model = glm::rotate(model, glm::radians(60.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
+		model = glm::scale(model, glm::vec3(0.25));
+		shader.setMat4("model", model);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glBindVertexArray(0);
 	}
 
 
@@ -294,7 +326,7 @@ public:
 			//设置纹理环绕，过滤方式
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 			//设置边缘颜色，
@@ -338,8 +370,8 @@ public:
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_REPEAT);
 
 		return textureID;
 
