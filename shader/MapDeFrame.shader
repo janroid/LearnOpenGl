@@ -2,39 +2,65 @@
 
 out vec4 FragColor;
 
-uniform sampler2D fTexture;  // 阴影
+uniform samplerCube fTexture;  // 阴影
 uniform sampler2D lTexture;  // 物体
 uniform vec3 lightPos;
 uniform vec3 viewPos;
+uniform float far_plane;
 
 in VS_OUT {
     vec2 fTexcoord;
     vec3 fNormal; 
     vec3 fPos;// 顶点在世界坐标位置
-    vec4 fPosLspace; // 顶点在光观察控件位置
 
 } vs_in;
 
-// 计算阴影
-float ShadowCalculation(vec4 pos,float bias){
-    vec3 projCoord = pos.rgb / pos.w;
-    projCoord = (projCoord * 0.5) + 0.5;
+vec3 gridSamplingDisk[20] = vec3[]
+(
+   vec3(1, 1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1, 1,  1), 
+   vec3(1, 1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
+   vec3(1, 1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1, 1,  0),
+   vec3(1, 0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1, 0, -1),
+   vec3(0, 1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1)
+);
 
+// 计算阴影
+float ShadowCalculation(vec3 fpos){
+    // 未优化锯齿
+    // vec3 fragToLight = fpos - lightPos;
+    // float currentDepth = length(fragToLight); // 当前片段距离光源的距离
+
+    // float closestDepth = texture(fTexture,fragToLight).r; // 当前片段在阴影贴图中的深度值
+
+    // closestDepth *= far_plane; // 因为深度贴图中保存的深度值是0-1，在这里转化为实际距离值
+
+    // float shadow = currentDepth - 0.05 > closestDepth ? 1.0 : 0.0;
+
+
+    // 优化锯齿后
+    vec3 fragToLight = fpos - lightPos;
+    float currentDepth = length(fragToLight);
     float shadow = 0.0;
-    vec2 texSize = 1.0 / textureSize(fTexture,0);
-    float currentDepth = projCoord.z;
-    for (int x = -1; x <= 1; ++x){
-        for(int y = -1; y <= 1; ++y){
-            float closestDepth = texture(fTexture,(projCoord.xy + vec2(x,y) * texSize)).r; // 采样偏移一个像素
-            shadow += (currentDepth - bias) > closestDepth ? 1.0 : 0.0;
+    float bias = 0.15;
+    float samples = 20;
+    float viewDistance = length(viewPos - fpos); 
+    float diskRadius = (1.0 + (viewDistance / far_plane)) / 25.0;
+    
+    for (int i = 0; i < samples; i++){
+        float closestDepth = texture(fTexture, fragToLight + gridSamplingDisk[i]*diskRadius).r;
+        closestDepth *= far_plane;
+        if(currentDepth - bias > closestDepth){
+            shadow += 1.0;
         }
     }
 
-    shadow /= 9.0;
+    shadow = shadow / float(samples);
 
-    if (projCoord.z > 1.0){
-        shadow = 0.0;
-    }
+    // 绘制阴影
+    // float closestDepth = texture(fTexture, fragToLight).r;
+    // closestDepth *= far_plane;
+
+    // FragColor = vec4(vec3(closestDepth / far_plane),1.0f);  
 
     return shadow;
 }
@@ -54,13 +80,13 @@ void main(){
     // 镜面反射
     vec3 viewDir = normalize(viewPos - vs_in.fPos);
     vec3 halfwayDir  = normalize(lightDir + viewDir);
-    float spec = pow(max(dot(halfwayDir, normal), 0.0), 64);
+    float spec = 0.0;
+    spec = pow(max(dot(normal, halfwayDir), 0.0), 64);
     vec3 specular = spec * lightColor;
 
-    float bias = max(0.05 * (1 - dot(lightDir, normal)), 0.005);
-    float shadow = ShadowCalculation(vs_in.fPosLspace, bias);
+    float shadow = ShadowCalculation(vs_in.fPos);
 
-    vec3 lighting = ambient + (diffuse + specular) * (1 - shadow) * fColor;
+    vec3 lighting = (ambient + (1 - shadow) * (diffuse + specular)) * fColor;
 
-    FragColor = vec4(lighting, 1.0f);
+    FragColor = vec4(lighting, 1.0f);  
 }

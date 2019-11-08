@@ -17,11 +17,12 @@ using namespace std;
 class MappingDemo {
 	float curTime, deltaTime;
 	float width, height;
-	Camera camera = Camera(glm::vec3(0.0f, 0.0f, 3.0f));
+	Camera camera = Camera(glm::vec3(0.0f, 0.0f,3.0f));
 
 	int SHADER_WIDTH = 1024, SHADER_HEIGHT = 1024;
+	bool shadows = true;
 
-	glm::vec3 lightPos = glm::vec3(-2.0f, 4.0f, -1.0f);
+	glm::vec3 lightPos = glm::vec3(0.0f, 0.0f, 0.0f);
 	unsigned int PVAO, CVAO;
 
 public:
@@ -29,16 +30,16 @@ public:
 	float vertices[288] = {
 		// back face
 		-1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
-		 1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
-		 1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f, // bottom-right         
-		 1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
+		1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
+		1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f, // bottom-right         
+		1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
 		-1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
 		-1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 1.0f, // top-left
 		// front face
 		-1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
-		 1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 0.0f, // bottom-right
-		 1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
-		 1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
+		1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 0.0f, // bottom-right
+		1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
+		1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
 		-1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f, // top-left
 		-1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
 		// left face
@@ -49,47 +50,27 @@ public:
 		-1.0f, -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-right
 		-1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-right
 		// right face
-		 1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
-		 1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
-		 1.0f,  1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top-right         
-		 1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
-		 1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
-		 1.0f, -1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-left     
+		1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
+		1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
+		1.0f,  1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top-right         
+		1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
+		1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
+		1.0f, -1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-left     
 		// bottom face
 		-1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // top-right
-		 1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 1.0f, // top-left
-		 1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
-		 1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
+		1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 1.0f, // top-left
+		1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
+		1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
 		-1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 0.0f, // bottom-right
 		-1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // top-right
 		// top face
 		-1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
-		 1.0f,  1.0f , 1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
-		 1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 1.0f, // top-right     
-		 1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
+		1.0f,  1.0f , 1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
+		1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 1.0f, // top-right     
+		1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
 		-1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
-		-1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f  // bottom-left        
+		-1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f  // bottom-left       
 	};
-
-	float planeVertices[48] = {
-		// positions            // normals         // texcoords
-		25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,  25.0f,  0.0f,
-		-25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,   0.0f,  0.0f,
-		-25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,   0.0f, 25.0f,
-
-		 25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,  25.0f,  0.0f,
-		-25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,   0.0f, 25.0f,
-		 25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,  25.0f, 25.0f
-	};
-
-	float quadVertices[20] = {
-		// positions        // texture Coords
-		-1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
-		-1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-		 1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
-		 1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
-	};
-
 
 	MappingDemo(float w,float h) {
 		width = w;
@@ -98,15 +79,17 @@ public:
 
 	void init(GLFWwindow* window) {
 		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_CULL_FACE);
 
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); // 隐藏鼠标脚垫
 
 		unsigned int woodTexture = loadTexture("D:/VSWorkspace/LearnGL/res/wood.png", GL_REPEAT);
-		Shader_m mappShader = Shader_m("D:/VSWorkspace/LearnGL/shader/MappingVer.shader", "D:/VSWorkspace/LearnGL/shader/MappingFrame.shader");
+		//Shader_m mappShader = Shader_m("D:/VSWorkspace/LearnGL/shader/MappingVer.shader", "D:/VSWorkspace/LearnGL/shader/MappingFrame.shader");
+		Shader_m lightShader = Shader_m("D:/VSWorkspace/LearnGL/shader/lightVerShader.shader", "D:/VSWorkspace/LearnGL/shader/lightFrameShader.shader");
 		Shader_m depthShader = Shader_m("D:/VSWorkspace/LearnGL/shader/MapDeVer.shader", "D:/VSWorkspace/LearnGL/shader/MapDeFrame.shader");
-		Shader_m qudShader = Shader_m("D:/VSWorkspace/LearnGL/shader/MapQudVer.shader", "D:/VSWorkspace/LearnGL/shader/MapQudFrame.shader");
+		Shader_m qudShader = Shader_m("D:/VSWorkspace/LearnGL/shader/MapQudVer.shader", "D:/VSWorkspace/LearnGL/shader/MapQudFrame.shader", "D:/VSWorkspace/LearnGL/shader/MapQudGo.shader");
 
-		// cube
+		// cube  生成立方体
 		unsigned int CVBO;
 		glGenVertexArrays(1, &CVAO);
 		glGenBuffers(1, &CVBO);
@@ -124,61 +107,37 @@ public:
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
 
-		// quad
-		unsigned int QVAO,QVBO;
-		glGenVertexArrays(1, &QVAO);
-		glGenBuffers(1, &QVBO);
+		// light 生成太阳
+		unsigned int LVAO;
+		glGenVertexArrays(1, &LVAO);
+		glBindVertexArray(LVAO);
 
-		glBindVertexArray(QVAO);
-		glBindBuffer(GL_ARRAY_BUFFER, QVBO);
-
-		glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindVertexArray(0);
-
-		// floor
-		unsigned int PVBO;
-		glGenVertexArrays(1, &PVAO);
-		glGenBuffers(1, &PVBO);
-
-		glBindVertexArray(PVAO);
-		glBindBuffer(GL_ARRAY_BUFFER, PVBO);
-
-		glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), planeVertices, GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, CVBO);
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-
-		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
-
 
 		// frame buffer
 		unsigned int DFBO;
 		glGenFramebuffers(1, &DFBO);
+		
+		unsigned int depthTTure;
+		glGenTextures(1, &depthTTure);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, depthTTure);
+		for (int i = 0; i < 6; i++) {
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, SHADER_WIDTH, SHADER_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+		}
+
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+
 		glBindFramebuffer(GL_FRAMEBUFFER, DFBO);
-
-		unsigned int DTEU;
-		glGenTextures(1, &DTEU);
-		glBindTexture(GL_TEXTURE_2D, DTEU);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADER_WIDTH, SHADER_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-		GLfloat borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
-		glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-		glBindTexture(GL_TEXTURE_2D, 0);
-
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, DTEU, 0);
+		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,depthTTure,0);
 		glDrawBuffer(GL_NONE);
 		glReadBuffer(GL_NONE);
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
@@ -186,14 +145,10 @@ public:
 		}
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-		mappShader.use();
-		mappShader.setInt("fTexture", 0);
-
 		depthShader.use();
-		depthShader.setInt("fTexture", 0);
-		depthShader.setInt("lTexture", 1);
+		depthShader.setInt("lTexture", 0);
+		depthShader.setInt("fTexture", 1);
 
-	
 		while (!glfwWindowShouldClose(window))
 		{
 			deltaTime = glfwGetTime() - curTime;
@@ -201,59 +156,67 @@ public:
 
 			processInput(window);
 
+			lightPos.z = sin(glfwGetTime() * 0.1) * 3.0;
+
 			glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+			float near_plane = 1.0f;
+			float far_plane = 25.0f;
+			glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), (float)SHADER_WIDTH / (float)SHADER_HEIGHT, near_plane, far_plane);
+			std::vector<glm::mat4> shadowTransforms;
+			shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+			shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+			shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
+			shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)));
+			shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+			shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
 
 			glViewport(0, 0, SHADER_WIDTH, SHADER_HEIGHT);
 			glBindFramebuffer(GL_FRAMEBUFFER, DFBO);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-			float near_plane = 1.0f, far_plane = 7.5f;
-			glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f,near_plane,far_plane);
-			glm::mat4 lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-			glm::mat4 lightMatrix = lightProjection * lightView;
+			glClear(GL_DEPTH_BUFFER_BIT);
 
 			qudShader.use();
-			qudShader.setMat4("lightMatrix", lightMatrix);
-
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, woodTexture);
-			glCullFace(GL_FRONT);
+			for (int i = 0; i < 6; i++) {
+				qudShader.setMat4("shadowMatrices["+std::to_string(i)+"]", shadowTransforms[i]);
+			}
+			qudShader.setFloat("far_plane", far_plane);
+			qudShader.setVec3("lightPos", lightPos);
 			renderScene(qudShader);
-			glCullFace(GL_BACK);
+
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-
 			glViewport(0, 0, width, height);
-			glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-
+			
 			depthShader.use();
+			glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)width / (float)height, 0.1f, 100.0f);
+			glm::mat4 view = camera.GetViewMatrix();
+			depthShader.setMat4("projection", projection);
+			depthShader.setMat4("view", view);
+			// set lighting uniforms
 			depthShader.setVec3("lightPos", lightPos);
 			depthShader.setVec3("viewPos", camera.Position);
-			depthShader.setMat4("lightMatrix", lightMatrix);
-
-			glm::mat4 view = camera.GetViewMatrix();
-			glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)width / (float)height, 0.1f, 100.0f);
-			depthShader.setMat4("view", view);
-			depthShader.setMat4("projection", projection);
-
+			depthShader.setFloat("far_plane", far_plane);
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, DTEU);
-			glActiveTexture(GL_TEXTURE1);
 			glBindTexture(GL_TEXTURE_2D, woodTexture);
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, depthTTure);
 			renderScene(depthShader);
 
+			// 画光源
+			lightShader.use();
+			glm::mat4 model = glm::mat4(1.0f);
+			model = glm::translate(model, lightPos);
+			model = glm::scale(model, glm::vec3(0.1));
+			lightShader.setMat4("model", model);
+			lightShader.setMat4("projection", projection);
+			lightShader.setMat4("view", view);
+			lightShader.setFloat("red", lightPos.z / 3.0f);
 
-			mappShader.use();
-			mappShader.setFloat("near_plane", near_plane);
-			mappShader.setFloat("far_plane", far_plane);
-			glBindVertexArray(QVAO);
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, DTEU);
-			//glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-			//glBindVertexArray(0);
+			glBindVertexArray(LVAO);
+			glDrawArrays(GL_TRIANGLES,0, 36);
+			glBindVertexArray(0);
 
 			glfwSwapBuffers(window);
 			glfwPollEvents();
@@ -262,38 +225,50 @@ public:
 
 		glDeleteVertexArrays(1, &CVAO);
 		glDeleteBuffers(1, &CVBO);
-		glDeleteVertexArrays(1, &PVAO);
-		glDeleteBuffers(1, &PVBO);
 
 		glfwTerminate();
 	}
 
 	void renderScene(Shader_m shader) {
-		// draw floor
+		// room cube
 		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::scale(model, glm::vec3(10.0f));
 		shader.setMat4("model", model);
-		glBindVertexArray(PVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-		glBindVertexArray(0);
-
-		// draw cube
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, 1.5f, 0.0));
-		model = glm::scale(model, glm::vec3(0.5f));
-		shader.setMat4("model", model);
+		glDisable(GL_CULL_FACE);
+		shader.setBool("reverse_normals",true);
 		glBindVertexArray(CVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
-
+		shader.setBool("reverse_normals", false);
+		glEnable(GL_CULL_FACE);
+		// draw cube
 		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(2.0f, 0.0f, 1.0));
+		model = glm::translate(model, glm::vec3(4.0f, -3.5f, 0.0));
 		model = glm::scale(model, glm::vec3(0.5f));
 		shader.setMat4("model", model);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(-1.0f, 0.0f, 2.0));
+		model = glm::translate(model, glm::vec3(2.0f, 3.0f, 1.0));
+		model = glm::scale(model, glm::vec3(0.75f));
+		shader.setMat4("model", model);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(-3.0f, -1.0f, 0.0));
+		model = glm::scale(model, glm::vec3(0.5f));
+		shader.setMat4("model", model);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(-1.5f, 1.0f, 1.5));
+		model = glm::scale(model, glm::vec3(0.5f));
+		shader.setMat4("model", model);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(-1.5f, 2.0f, -3.0));
 		model = glm::rotate(model, glm::radians(60.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
-		model = glm::scale(model, glm::vec3(0.25));
+		model = glm::scale(model, glm::vec3(0.75f));
 		shader.setMat4("model", model);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		glBindVertexArray(0);
