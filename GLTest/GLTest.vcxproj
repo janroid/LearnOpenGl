@@ -137,6 +137,7 @@
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="MultiDemo.cpp" />
+    <ClCompile Include="NormalMapDemo.cpp" />
     <ClCompile Include="ObjectDemo.cpp" />
     <ClCompile Include="PointDemo.cpp" />
     <ClCompile Include="Shader_m.cpp" />

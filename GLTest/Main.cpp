@@ -13,7 +13,8 @@
 //#include <GeometryDemo.cpp>
 //#include <ObjectDemo.cpp>
 //#include <MultiDemo.cpp>
-#include <MappingDemo.cpp>
+//#include <MappingDemo.cpp>
+#include <NormalMapDemo.cpp>
 
 #include <iostream>
 #include <string>
@@ -37,7 +38,7 @@ float lastX = width / 2.0f;
 float lastY = height / 2.0f;
 bool firstMouse = true;
 
-MappingDemo objDemo = MappingDemo(width,height);
+NormalMapDemo objDemo = NormalMapDemo(width,height);
 
 
 int main()

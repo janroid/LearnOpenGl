@@ -75,6 +75,9 @@
     <ClCompile Include="MappingDemo.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="NormalMapDemo.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
