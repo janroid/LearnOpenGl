@@ -78,6 +78,9 @@
     <ClCompile Include="NormalMapDemo.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="ParallaxDemo.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">

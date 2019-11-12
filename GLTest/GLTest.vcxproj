@@ -139,6 +139,7 @@
     <ClCompile Include="MultiDemo.cpp" />
     <ClCompile Include="NormalMapDemo.cpp" />
     <ClCompile Include="ObjectDemo.cpp" />
+    <ClCompile Include="ParallaxDemo.cpp" />
     <ClCompile Include="PointDemo.cpp" />
     <ClCompile Include="Shader_m.cpp" />
     <ClCompile Include="stb_image.cpp" />
