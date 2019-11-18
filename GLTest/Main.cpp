@@ -15,7 +15,8 @@
 //#include <MultiDemo.cpp>
 //#include <MappingDemo.cpp>
 //#include <NormalMapDemo.cpp>
-#include <ParallaxDemo.cpp>
+//#include <ParallaxDemo.cpp>
+#include <HdrDemo.cpp>
 
 #include <iostream>
 #include <string>
@@ -39,7 +40,7 @@ float lastX = width / 2.0f;
 float lastY = height / 2.0f;
 bool firstMouse = true;
 
-ParallaxDemo objDemo = ParallaxDemo(width,height);
+HdrDemo objDemo = HdrDemo(width,height);
 
 
 int main()
