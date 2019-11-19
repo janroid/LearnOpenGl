@@ -14,6 +14,7 @@
 
 using namespace std;
 
+// ·¢ÏÖÌùÍ¼Demo
 class NormalMapDemo{
 	float curTime, deltaTime;
 	float width, height;

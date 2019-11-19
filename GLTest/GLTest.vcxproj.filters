@@ -81,6 +81,12 @@
     <ClCompile Include="ParallaxDemo.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="HdrDemo.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="BloomDemo.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">

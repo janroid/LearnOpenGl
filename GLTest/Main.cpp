@@ -16,7 +16,8 @@
 //#include <MappingDemo.cpp>
 //#include <NormalMapDemo.cpp>
 //#include <ParallaxDemo.cpp>
-#include <HdrDemo.cpp>
+//#include <HdrDemo.cpp>
+#include <BloomDemo.cpp>
 
 #include <iostream>
 #include <string>
@@ -40,7 +41,7 @@ float lastX = width / 2.0f;
 float lastY = height / 2.0f;
 bool firstMouse = true;
 
-HdrDemo objDemo = HdrDemo(width,height);
+BloomDemo objDemo = BloomDemo(width,height);
 
 
 int main()
