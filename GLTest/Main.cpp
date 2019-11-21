@@ -17,7 +17,8 @@
 //#include <NormalMapDemo.cpp>
 //#include <ParallaxDemo.cpp>
 //#include <HdrDemo.cpp>
-#include <BloomDemo.cpp>
+//#include <BloomDemo.cpp>
+#include <BlurDemo.cpp>
 
 #include <iostream>
 #include <string>
@@ -34,14 +35,14 @@ void mource_callback(GLFWwindow *window, double xpos, double ypos);
 void mource_scroll(GLFWwindow *window, double xpos, double ypos);
 unsigned int loadTexture(std::string path);
 
-int width = 1280;
-int height = 720;
+int width = 884;
+int height = 578;
 
 float lastX = width / 2.0f;
 float lastY = height / 2.0f;
 bool firstMouse = true;
 
-BloomDemo objDemo = BloomDemo(width,height);
+BlurDemo objDemo = BlurDemo(width,height);
 
 
 int main()

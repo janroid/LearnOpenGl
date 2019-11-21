@@ -17,6 +17,7 @@ class TextureDemo
 public:
 	Shader_m tureShader;
 	float prop = 0.3f;
+	float width, height;
 
 	
 	float point[32] = {
@@ -30,14 +31,19 @@ public:
 		0,1,2,
 		0,2,3
 	};
+	TextureDemo(float w, float h) {
+		width = w;
+		height = h;
+	
+	}
 
-	TextureDemo(int w, int h, GLFWwindow* window) {
+	void init(GLFWwindow* window) {
 		glEnable(GL_DEPTH_TEST);
 
 		tureShader = Shader_m("D:/VSWorkspace/LearnGL/shader/TextureVerShader.shader", "D:/VSWorkspace/LearnGL/shader/TextureFrameShader.shader");
 
 		// Œ∆¿Ì
-		unsigned int texture1 = loadTexture("D:/VSWorkspace/LearnGL/res/container.jpg",GL_REPEAT);
+		unsigned int texture1 = loadTexture("D:/VSWorkspace/LearnGL/res/blur.png",GL_REPEAT);
 		unsigned int texture2 = loadTexture("D:/VSWorkspace/LearnGL/res/awesomeface.png", GL_REPEAT);
 		
 		// ∂•µ„
@@ -82,11 +88,8 @@ public:
 		//trans1 = glm::rotate(trans1, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
 		glm::mat4 model,view,projection;
-		model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 		view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-		projection = glm::perspective(glm::radians(45.0f), (float)w/(float)h, 0.1f, 100.0f);
-
-		tureShader.setMat4("model", model);
+		projection = glm::perspective(glm::radians(45.0f), (float)width/(float)height, 0.1f, 100.0f);
 		tureShader.setMat4("view", view);
 		tureShader.setMat4("projection", projection);
 
@@ -103,10 +106,22 @@ public:
 			glBindTexture(GL_TEXTURE_2D, texture2);
 
 			tureShader.use();
+			model = glm::mat4(1.0f);
+			model = glm::translate(model, glm::vec3(-0.5f,1.0f,1.0f));
+			tureShader.setMat4("model", model);
 			//tureShader.setMat4("trans", trans1);			
 
 			glBindVertexArray(VAO);
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+			glBindVertexArray(0);
+
+			model = glm::mat4(1.0f);
+			model = glm::translate(model, glm::vec3(0.5f, 1.0f, 1.0f));
+			tureShader.setMat4("model", model);
+			glBindVertexArray(VAO);
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+			glBindVertexArray(0);
+
 
 			//glm::mat4 trans2 = glm::mat4(1.0f);
 			//trans2 = glm::scale(trans2, glm::vec3(sin(glfwGetTime()), sin(glfwGetTime()), sin(glfwGetTime())));
@@ -168,13 +183,11 @@ public:
 
 	}
 
-private:
-
 	void processInput(GLFWwindow *window) {
 
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 			glfwSetWindowShouldClose(window, true);
-			
+
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 			prop = prop + 0.0005f;
 		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -194,5 +207,17 @@ private:
 		//std::cout << "prop is : " << prop << std::endl;
 		tureShader.setFloat("prop", prop);
 	}
+	void mource_callback(GLFWwindow *window, double xpos, double ypos) {
+		
+	}
+
+	void mource_scroll(GLFWwindow *window, double xpos, double ypos) {
+
+	}
+
+
+private:
+
+	
 
 };

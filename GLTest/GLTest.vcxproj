@@ -127,6 +127,7 @@
     <ClCompile Include="AssimpDemo.cpp" />
     <ClCompile Include="BlendDemo.cpp" />
     <ClCompile Include="BloomDemo.cpp" />
+    <ClCompile Include="BlurDemo.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CameraDemo.cpp" />
     <ClCompile Include="FlightDemo.cpp" />
