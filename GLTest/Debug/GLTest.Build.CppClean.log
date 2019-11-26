@@ -1,6 +1,5 @@
 d:\vsworkspace\learngl\gltest\debug\vc141.pdb
 d:\vsworkspace\learngl\gltest\debug\vc141.idb
-d:\vsworkspace\learngl\gltest\debug\parallaxdemo.obj
 d:\vsworkspace\learngl\gltest\debug\objectdemo.obj
 d:\vsworkspace\learngl\gltest\debug\normalmapdemo.obj
 d:\vsworkspace\learngl\gltest\debug\multidemo.obj
@@ -12,6 +11,7 @@ d:\vsworkspace\learngl\gltest\debug\lightingdemo.obj
 d:\vsworkspace\learngl\gltest\debug\hdrdemo.obj
 d:\vsworkspace\learngl\gltest\debug\geometrydemo.obj
 d:\vsworkspace\learngl\gltest\debug\flightdemo.obj
+d:\vsworkspace\learngl\gltest\debug\delaydemo.obj
 d:\vsworkspace\learngl\gltest\debug\camerademo.obj
 d:\vsworkspace\learngl\gltest\debug\camera.obj
 d:\vsworkspace\learngl\gltest\debug\blurdemo.obj
@@ -24,6 +24,7 @@ d:\vsworkspace\learngl\gltest\debug\texturedemo.obj
 d:\vsworkspace\learngl\gltest\debug\stb_image.obj
 d:\vsworkspace\learngl\gltest\debug\shader_m.obj
 d:\vsworkspace\learngl\gltest\debug\pointdemo.obj
+d:\vsworkspace\learngl\gltest\debug\parallaxdemo.obj
 d:\vsworkspace\learngl\gltest\debug\glad.obj
 d:\vsworkspace\learngl\debug\gltest.ilk
 d:\vsworkspace\learngl\debug\gltest.exe

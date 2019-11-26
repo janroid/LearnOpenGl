@@ -130,6 +130,7 @@
     <ClCompile Include="BlurDemo.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CameraDemo.cpp" />
+    <ClCompile Include="DelayDemo.cpp" />
     <ClCompile Include="FlightDemo.cpp" />
     <ClCompile Include="GeometryDemo.cpp" />
     <ClCompile Include="glad.c" />
