@@ -146,6 +146,7 @@
     <ClCompile Include="ParallaxDemo.cpp" />
     <ClCompile Include="PointDemo.cpp" />
     <ClCompile Include="Shader_m.cpp" />
+    <ClCompile Include="SSAODemo.cpp" />
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="TextureDemo.cpp" />
   </ItemGroup>
