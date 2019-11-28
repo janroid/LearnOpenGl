@@ -19,8 +19,8 @@
 //#include <HdrDemo.cpp>
 //#include <BloomDemo.cpp>
 //#include <BlurDemo.cpp>
-//#include <DelayDemo.cpp>
-#include <SSAODemo.cpp>
+#include <DelayDemo.cpp>
+//#include <SSAODemo.cpp>
 
 #include <iostream>
 #include <string>
@@ -44,7 +44,7 @@ float lastX = width / 2.0f;
 float lastY = height / 2.0f;
 bool firstMouse = true;
 
-SSAODemo objDemo = SSAODemo(width,height);
+DelayDemo objDemo = DelayDemo(width,height);
 
 
 int main()

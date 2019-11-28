@@ -129,9 +129,9 @@ public:
 		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-		glEnableVertexAttribArray(3);
+		glEnableVertexAttribArray(1);
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-		glEnableVertexAttribArray(3);
+		glEnableVertexAttribArray(2);
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
@@ -159,22 +159,22 @@ public:
 
 		glGenTextures(1, &colorBuffer);
 		glBindTexture(GL_TEXTURE_2D, colorBuffer);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, colorBuffer, 0);
 
-		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-			std::cout << "Framebuffer not complete!" << std::endl;
-		
+		unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
+		glDrawBuffers(3, attachments);
+
 		unsigned int rboDepth;
 		glGenRenderbuffers(1, &rboDepth);
 		glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
 		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_COMPONENT, GL_RENDERBUFFER, rboDepth);
 
-		unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
-		glDrawBuffers(3, attachments);
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+			std::cout << "Framebuffer not complete!" << std::endl;
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -210,7 +210,7 @@ public:
 			curTime = glfwGetTime();
 
 			processInput(window);
-			glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			glBindFramebuffer(GL_FRAMEBUFFER, robotFBO);
@@ -220,13 +220,12 @@ public:
 			view = camera.GetViewMatrix();
 			projection = glm::perspective(glm::radians(camera.Zoom), float(width) / (float)height, 0.1f, 100.0f);
 			robotShader.use();
-
+			robotShader.setMat4("view", view);
+			robotShader.setMat4("projection", projection);
 			for (int i = 0; i < 9; i++) {
 				model = glm::mat4(1.0f);
 				model = glm::translate(model, posVertices[i]);
 				model = glm::scale(model, glm::vec3(0.25f));
-				robotShader.setMat4("view", view);
-				robotShader.setMat4("projection", projection);
 				robotShader.setMat4("model", model);
 
 				robot.draw(&robotShader);
@@ -236,7 +235,13 @@ public:
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			finalShader.use();
-			finalShader.setVec3("viewPos", camera.Position);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, posBuffer);
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, norBuffer);
+			glActiveTexture(GL_TEXTURE2);
+			glBindTexture(GL_TEXTURE_2D, colorBuffer);
+			
 			for (int i = 0; i < lightPos.size(); i++) {
 				const float linear = 0.7;
 				const float quadratic = 1.8;
@@ -245,13 +250,7 @@ public:
 				finalShader.setFloat("light[" + std::to_string(i) + "].mlinear", linear);
 				finalShader.setFloat("light[" + std::to_string(i) + "].quadratic", quadratic);
 			}
-
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, posBuffer);
-			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, norBuffer);
-			glActiveTexture(GL_TEXTURE2);
-			glBindTexture(GL_TEXTURE_2D, colorBuffer);
+			finalShader.setVec3("viewPos", camera.Position);
 
 			glBindVertexArray(VAO);
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);

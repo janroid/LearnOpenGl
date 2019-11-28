@@ -27,17 +27,17 @@ void main(){
     vec3 diffuseColor = tmp.rgb;
     float specN = tmp.a;
 
-    vec3 fColor;
+    vec3 viewDir = normalize(viewPos - fPos);
+    vec3 fColor = diffuseColor * 0.1f;
     for (int i = 0; i < NR_LIGHTS; i++){
         vec3 lightDir = normalize(light[i].pos - fPos);
-        vec3 viewDir = normalize(viewPos - fPos);
-
+        
         // 慢反射
         vec3 diffuse = max(dot(fNormal, lightDir), 0.0f) * diffuseColor * light[i].color;
 
         // 镜面反射
         vec3 halfDir = normalize(lightDir + viewDir);
-        float spec = pow(max(dot(halfDir, fNormal), 0.0f), 16);
+        float spec = pow(max(dot(halfDir, fNormal), 0.0f), 16.0f);
         vec3 specular = spec * specN * light[i].color;
 
         // 衰减
