@@ -14,14 +14,18 @@
 
 using namespace std;
 
-
 class BlendDemo {
 	float curTime, deltaTime;
 	float width, height;
 	Camera camera = Camera(glm::vec3(0.0f, 0.0f, 3.0f));
-	
+
 
 public:
+	const GLfloat PI = 3.14159265358979323846f;
+	//将球横纵划分成50*50的网格
+	const int Y_SEGMENTS = 100;
+	const int X_SEGMENTS = 100;
+
 	float skyboxVertices[108] = {
 		// positions          
 		-1.0f,  1.0f, -1.0f,
@@ -136,6 +140,41 @@ public:
 
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); // 隐藏鼠标脚垫
 
+		// 生成球的顶点与顺序
+		vector<float> sphereVertices;
+		vector<int> sphereIndexs;
+
+		for (int i = 0; i < Y_SEGMENTS; i++) 
+		{
+			for (int j = 0; j < X_SEGMENTS; j++) 
+			{
+				float xSegment = (float)j / (float)X_SEGMENTS;
+				float ySegment = (float)i / (float)Y_SEGMENTS;
+				float xPos = std::cos(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
+				float yPos = std::cos(ySegment * PI);
+				float zPos = std::sin(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
+				sphereVertices.push_back(xPos);
+				sphereVertices.push_back(yPos);
+				sphereVertices.push_back(zPos);
+
+			}
+		}
+
+		//生成球的Indices
+		for (int i = 0; i < Y_SEGMENTS; i++)
+		{
+			for (int j = 0; j < X_SEGMENTS; j++)
+			{
+				sphereIndexs.push_back(i * (X_SEGMENTS + 1) + j);
+				sphereIndexs.push_back((i + 1) * (X_SEGMENTS + 1) + j);
+				sphereIndexs.push_back((i + 1) * (X_SEGMENTS + 1) + j + 1);
+				sphereIndexs.push_back(i* (X_SEGMENTS + 1) + j);
+				sphereIndexs.push_back((i + 1) * (X_SEGMENTS + 1) + j + 1);
+				sphereIndexs.push_back(i * (X_SEGMENTS + 1) + j + 1);
+			}
+		}
+
+
 		unsigned int cubeTex = loadTexture("D:/VSWorkspace/LearnGL/res/box.png",GL_REPEAT);
 		vector<std::string> faces
 		{
@@ -152,20 +191,23 @@ public:
 		Shader_m frameShader = Shader_m("D:/VSWorkspace/LearnGL/shader/FrameVerShader.shader", "D:/VSWorkspace/LearnGL/shader/FrameFrameShader.shader");
 		Shader_m skyShader = Shader_m("D:/VSWorkspace/LearnGL/shader/SkyVerShader.shader", "D:/VSWorkspace/LearnGL/shader/SkyFrameShader.shader");
 
-		unsigned int CVAO, CVBO, FVAO, FVBO, SVAO, SVBO;
+		unsigned int CVAO, CVBO, FVAO, FVBO, SVAO, SVBO, CEBO;
 
 		glGenVertexArrays(1, &CVAO);
 		glGenBuffers(1, &CVBO);
+		glGenBuffers(1, &CEBO);
 
 		glBindVertexArray(CVAO);
 		glBindBuffer(GL_ARRAY_BUFFER, CVBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sphereVertices.size() * sizeof(float), &sphereVertices[0], GL_STATIC_DRAW);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, CEBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sphereIndexs.size() * sizeof(int), &sphereIndexs[0], GL_STATIC_DRAW);
 
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 		glEnableVertexAttribArray(0);
 
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-		glEnableVertexAttribArray(1);
+		glBindVertexArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 		// 天空盒
 		glGenVertexArrays(1, &SVAO);
@@ -230,6 +272,7 @@ public:
 
 		ourShader.use();
 		ourShader.setInt("aTexture", 0);
+		ourShader.setVec3("cenPos", glm::vec3(0.0f, 0.0f, 0.0f));
 		unsigned vid = glGetUniformBlockIndex(ourShader.ID, "Matrices");
 		glUniformBlockBinding(ourShader.ID, vid, 0);
 
@@ -274,15 +317,17 @@ public:
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_CUBE_MAP, skyTex);
 			model = glm::mat4(1.0f);
-			model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -0.5f));
+			//model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -0.5f));
 			ourShader.setMat4("model",model);
-			glDrawArrays(GL_TRIANGLES, 0, 36);
+			//glDrawArrays(GL_TRIANGLES, 0, 36);
+			glDrawElements(GL_TRIANGLES, Y_SEGMENTS * X_SEGMENTS * 6, GL_UNSIGNED_INT, 0);
 
-			model = glm::mat4(1.0f);
+
+			/*model = glm::mat4(1.0f);
 			model = glm::translate(model, glm::vec3(1.5f, 0.0f, 0.0f));
 			ourShader.setMat4("model", model);
 			glDrawArrays(GL_TRIANGLES, 0, 36);
-			glBindVertexArray(0);
+			glBindVertexArray(0);*/
 
 			// 画天空盒
 			glDepthFunc(GL_LEQUAL);
