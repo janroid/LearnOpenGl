@@ -153,6 +153,7 @@ public:
 				float xPos = std::cos(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
 				float yPos = std::cos(ySegment * PI);
 				float zPos = std::sin(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
+
 				sphereVertices.push_back(xPos);
 				sphereVertices.push_back(yPos);
 				sphereVertices.push_back(zPos);

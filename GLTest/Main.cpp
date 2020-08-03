@@ -9,7 +9,7 @@
 //#include <CameraDemo.cpp>
 //#include <LightingDemo.cpp>
 //#include <AssimpDemo.cpp>
-#include <BlendDemo.cpp>
+//#include <BlendDemo.cpp>
 //#include <GeometryDemo.cpp>
 //#include <ObjectDemo.cpp>
 //#include <MultiDemo.cpp>
@@ -21,6 +21,7 @@
 //#include <BlurDemo.cpp>
 //#include <DelayDemo.cpp>
 //#include <SSAODemo.cpp>
+#include <BuffDemo.cpp>
 
 #include <iostream>
 #include <string>
@@ -44,7 +45,7 @@ float lastX = width / 2.0f;
 float lastY = height / 2.0f;
 bool firstMouse = true;
 
-BlendDemo objDemo = BlendDemo(width,height);
+BuffDemo objDemo = BuffDemo(width,height);
 
 
 int main()
