@@ -146,18 +146,47 @@ public:
 		glBindVertexArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+		// PBO 
+		unsigned int blueTexs[5];
+		unsigned int PBO;
+		glGenBuffers(5, blueTexs);
+		glGenBuffers(1, &PBO);
+
+		float pixeBuffSize = width * height * 3 * sizeof(GL_BYTE);
+		void* data = (void*)malloc(pixeBuffSize);
+		memset(data, 0x00, pixeBuffSize);
+		for (int i = 0; i < 5; i++) {
+			glActiveTexture(GL_TEXTURE0 + i);
+			glBindTexture(GL_TEXTURE_2D, blueTexs[i]);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		}
+
+		glBindBuffer(GL_PIXEL_PACK_BUFFER, PBO);
+		glBufferData(GL_PIXEL_PACK_BUFFER, pixeBuffSize, NULL, GL_DYNAMIC_COPY);
+		glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
 
 		ourShader.use();
 		ourShader.setVec3("lightDir", 0.2f, -1.0f, -0.5f);
 		ourShader.setVec3("ambColor", 0.1f, 0.1f, 0.1f);
 		ourShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
+		ourShader.setInt("textureUnit0", 0);
+		ourShader.setInt("textureUnit1", 1);
+		ourShader.setInt("textureUnit2", 2);
+		ourShader.setInt("textureUnit3", 3);
+		ourShader.setInt("textureUnit4", 4);
 
 		floorShader.use();
 		floorShader.setInt("aTexture", 0);
+		int index = 0;
 
 		while (!glfwWindowShouldClose(window)) {
 			deltaTime = glfwGetTime() - curTime;
 			curTime = glfwGetTime();
+			
 
 			processInput(window);
 
@@ -186,11 +215,22 @@ public:
 			ourShader.setMat4("view", view);
 			ourShader.setMat4("projection", projection);
 			model = glm::translate(model, glm::vec3(0.0f, 0.5f, 0.0f));
+			model = glm::rotate(model, glm::radians((float)glfwGetTime() * -30.0f), glm::normalize(glm::vec3(0.0, 1.0, 0.0)));
 			ourShader.setMat4("model", model);
 
 			glBindVertexArray(TVAO);
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, torusVertices.size() / 6);
 
+			glBindBuffer(GL_PIXEL_PACK_BUFFER, PBO);
+			glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+			glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+
+			glBindBuffer(GL_PIXEL_UNPACK_BUFFER, PBO);
+			glActiveTexture(GL_TEXTURE0 + (index % 5));
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+			glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+
+			index += 1;
 			glfwSwapBuffers(window);
 			glfwPollEvents();
 
